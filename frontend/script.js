@@ -371,3 +371,8 @@ loginBtn.addEventListener("click", () => {
     );
 
 });
+console.log("TBP AI Script Loaded");
+
+loginBtn.onclick = () => {
+    alert("Login Button Working!");
+};
