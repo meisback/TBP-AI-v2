@@ -335,3 +335,39 @@ userInput.addEventListener("keydown", (e) => {
         sendMessage();
     }
 });
+// ==============================
+// TBP AI v2.0 - Part 3I
+// Login System
+// ==============================
+
+const loginScreen = document.getElementById("loginScreen");
+const loginBtn = document.getElementById("loginBtn");
+const usernameInput = document.getElementById("username");
+
+// Already logged in?
+const savedUser = localStorage.getItem("tbp_username");
+
+if (savedUser) {
+    loginScreen.style.display = "none";
+}
+
+// Login
+loginBtn.addEventListener("click", () => {
+
+    const name = usernameInput.value.trim();
+
+    if (!name) {
+        alert("আপনার নাম লিখুন");
+        return;
+    }
+
+    localStorage.setItem("tbp_username", name);
+
+    loginScreen.style.display = "none";
+
+    addMessage(
+        `👋 স্বাগতম <b>${name}</b>!`,
+        "bot"
+    );
+
+});
