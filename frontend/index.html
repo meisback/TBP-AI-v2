@@ -1,22 +1,44 @@
-
 <!DOCTYPE html>
 <html lang="bn">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>TBP AI v2.0</title>
+    <title>TBP AI v2.0</title>
 
-  <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
+
+<!-- Login Screen -->
+<div id="loginScreen">
+
+    <div class="login-box">
+
+        <h1>🤖 TBP AI</h1>
+
+        <p>Login to Continue</p>
+
+        <input
+            type="text"
+            id="username"
+            placeholder="Enter your name"
+        >
+
+        <button id="loginBtn">
+            Continue
+        </button>
+
+    </div>
+
+</div>
 
 <div class="app">
 
@@ -37,17 +59,17 @@
 
         </div>
 
-   <div class="header-buttons">
+        <div class="header-buttons">
 
-    <button id="newChatBtn">+</button>
+            <button id="newChatBtn">+</button>
 
-    <button id="themeBtn">🌙</button>
+            <button id="themeBtn">🌙</button>
 
-    <button id="profileBtn">👤</button>
+            <button id="profileBtn">👤</button>
 
-    <button id="logoutBtn">🚪</button>
+            <button id="logoutBtn">🚪</button>
 
-   </div>
+        </div>
 
     </header>
 
@@ -70,63 +92,28 @@
             </div>
 
         </div>
+        </main>
 
-    </main>
-
-    <!-- Typing -->
-
-    <div id="typing" class="typing">
-
+    <!-- Typing Indicator -->
+    <div id="typing" class="typing" style="display:none;">
         TBP AI লিখছে...
-
     </div>
 
     <!-- Input -->
-
     <footer>
 
         <input
-        id="userInput"
-        type="text"
-        placeholder="আপনার প্রশ্ন লিখুন...">
+            id="userInput"
+            type="text"
+            placeholder="আপনার প্রশ্ন লিখুন..."
+            autocomplete="off"
+        >
 
         <button id="sendBtn">
-
             ➤
-
         </button>
 
     </footer>
-
-</div>
-
-<script src="script.js"></script>
-
-</body>
-</html>
-<!-- ==========================
-TBP AI v2.0 - Login Screen
-========================== -->
-
-
-
-    <div class="login-box">
-
-        <h1>🤖 TBP AI</h1>
-
-        <p>Login to Continue</p>
-
-        <input
-            type="text"
-            id="username"
-            placeholder="Enter your name"
-        >
-
-        <button id="loginBtn">
-            Continue
-        </button>
-
-    </div>
 
 </div>
 
