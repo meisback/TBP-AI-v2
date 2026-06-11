@@ -5,7 +5,7 @@
 // =============================
 
 // Backend URL
-const API_URL = "https://YOUR-BACKEND.onrender.com/chat";
+const API_URL = "https://tbp-ai-v2.onrender.com/chat";
 
 // Elements
 const chatBox = document.getElementById("chatBox");
