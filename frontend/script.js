@@ -244,20 +244,14 @@ function addMessage(text, sender) {
 
     const bubble = document.createElement("div");
     bubble.className = "bubble";
-
     bubble.innerHTML = text;
 
-    // Actions
     const actions = document.createElement("div");
     actions.className = "message-actions";
 
-    // Copy Button
     const copyBtn = document.createElement("button");
-
     copyBtn.innerHTML = "📋";
-
     copyBtn.title = "Copy";
-
     copyBtn.onclick = () => copyMessage(text);
 
     actions.appendChild(copyBtn);
@@ -269,7 +263,6 @@ function addMessage(text, sender) {
     chatBox.appendChild(wrapper);
 
     chatBox.scrollTop = chatBox.scrollHeight;
-
 }
 // =============================
 // TBP AI v2.0 - Part 3E
@@ -308,3 +301,37 @@ function removeTypingBubble() {
     }
 
 }
+// =============================
+// TBP AI v2.0 - Part 3F
+// Like, Dislike & Regenerate
+// =============================
+
+// Like Message
+function likeMessage(button) {
+    button.innerHTML = "💚";
+}
+
+// Dislike Message
+function dislikeMessage(button) {
+    button.innerHTML = "❤️";
+}
+
+// Regenerate
+function regenerateResponse(lastMessage) {
+
+    userInput.value = lastMessage;
+
+    sendMessage();
+
+}
+
+// Send Button
+sendBtn.addEventListener("click", sendMessage);
+
+// Enter Key Support
+userInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+    }
+});
