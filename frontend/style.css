@@ -1,458 +1,368 @@
+/* ===================================
+   TBP AI v3.0 Premium UI
+   Part 1 - Base
+=================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+:root{
+
+--bg:#0b0f19;
+--surface:#111827;
+--surface2:#1f2937;
+
+--primary:#10a37f;
+--secondary:#0ea5e9;
+
+--text:#ffffff;
+--muted:#94a3b8;
+
+--user:#10b981;
+--bot:#1e293b;
+
+--border:rgba(255,255,255,.08);
+
+--shadow:0 10px 35px rgba(0,0,0,.35);
+
+}
 
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial, sans-serif;
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+html,body{
+width:100%;
+height:100%;
+overflow:hidden;
+background:var(--bg);
+color:var(--text);
 }
 
 body{
-    background:#050816;
-    color:#fff;
-    height:100vh;
+
+background:
+linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)),
+url("wallpapers/default.jpg");
+
+background-size:cover;
+background-position:center;
+background-attachment:fixed;
+
+transition:.35s;
+
 }
 
-.container{
-    width:100%;
-    max-width:500px;
-    height:100vh;
-    margin:auto;
-    display:flex;
-    flex-direction:column;
-    background:#07152d;
+/* App */
+
+.app{
+
+width:100%;
+height:100vh;
+
+display:flex;
+flex-direction:column;
+
+backdrop-filter:blur(6px);
+
 }
 
-.header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:18px;
-    background:#0b1023;
-    border-bottom:1px solid rgba(0,255,150,.2);
-}
-
-.logo{
-    font-size:26px;
-    font-weight:bold;
-    color:#ffffff;
-}
-
-.actions{
-    display:flex;
-    gap:10px;
-}
-
-.icon-btn{
-    width:48px;
-    height:48px;
-    border:none;
-    border-radius:50%;
-    background:#16203f;
-    color:#00ff88;
-    font-size:22px;
-    cursor:pointer;
-    transition:.3s;
-}
-
-.icon-btn:hover{
-    background:#00ff88;
-    color:#000;
-}
-
-.chat-box{
-    flex:1;
-    overflow-y:auto;
-    padding:15px;
-}
-
-.message{
-    display:flex;
-    margin:12px 0;
-}
-
-.user{
-    justify-content:flex-end;
-}
-
-.bot{
-    justify-content:flex-start;
-}
-
-.bubble{
-    max-width:80%;
-    padding:15px;
-    border-radius:18px;
-    font-size:16px;
-    line-height:1.6;
-    word-wrap:break-word;
-}
-
-.user .bubble{
-    background:#00ff66;
-    color:#000;
-    border-bottom-right-radius:5px;
-}
-
-.bot .bubble{
-    background:#121b38;
-    color:#fff;
-    border-left:4px solid #00ff88;
-    border-bottom-left-radius:5px;
-}
-
-.input-area{
-    display:flex;
-    align-items:center;
-    padding:15px;
-    gap:12px;
-    background:#0b1023;
-    border-top:1px solid rgba(0,255,150,.2);
-}
-
-#prompt{
-    flex:1;
-    height:55px;
-    border:none;
-    outline:none;
-    border-radius:30px;
-    padding:0 18px;
-    background:#16203f;
-    color:#fff;
-    font-size:16px;
-}
-
-#sendBtn{
-    width:60px;
-    height:60px;
-    border:none;
-    border-radius:50%;
-    background:#00ff66;
-    color:#000;
-    font-size:24px;
-    cursor:pointer;
-    transition:.3s;
-    box-shadow:0 0 20px #00ff66;
-}
-
-#sendBtn:hover{
-    transform:scale(1.08);
-}
-
-.typing{
-    display:inline-block;
-    width:8px;
-    height:8px;
-    border-radius:50%;
-    background:#00ff88;
-    margin:0 2px;
-    animation:typing 1s infinite;
-}
-
-.typing:nth-child(2){
-    animation-delay:.2s;
-}
-
-.typing:nth-child(3){
-    animation-delay:.4s;
-}
-
-@keyframes typing{
-    0%{
-        opacity:.3;
-        transform:translateY(0);
-    }
-    50%{
-        opacity:1;
-        transform:translateY(-5px);
-    }
-    100%{
-        opacity:.3;
-        transform:translateY(0);
-    }
-}
+/* Scroll */
 
 ::-webkit-scrollbar{
-    width:5px;
+
+width:6px;
+
 }
 
 ::-webkit-scrollbar-thumb{
-    background:#00ff88;
-    border-radius:20px;
+
+background:#10a37f;
+border-radius:20px;
+
 }
 
-@media(max-width:600px){
+::-webkit-scrollbar-track{
+
+background:transparent;
+
+}
+/* ===================================
+   TBP AI v3.0 Premium UI
+   Part 2 - Header
+=================================== */
+
+header{
+
+height:72px;
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+padding:0 18px;
+
+background:rgba(17,24,39,.75);
+
+backdrop-filter:blur(18px);
+
+border-bottom:1px solid rgba(255,255,255,.08);
+
+position:sticky;
+top:0;
+z-index:999;
+
+}
 
 .logo{
-    font-size:22px;
-}
 
-.icon-btn{
-    width:42px;
-    height:42px;
-}
-
-#sendBtn{
-    width:55px;
-    height:55px;
-}
-
-      }
-/* ==========================
-TBP AI v2.0 Login
-========================== */
-
-#loginScreen{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:#050b18;
 display:flex;
-justify-content:center;
 align-items:center;
-z-index:99999;
-}
+gap:14px;
 
-.login-box{
-width:90%;
-max-width:350px;
-background:#101a35;
-padding:25px;
-border-radius:20px;
-text-align:center;
-}
-
-.login-box h1{
-color:#00ff88;
-margin-bottom:10px;
-}
-
-.login-box p{
-color:white;
-margin-bottom:20px;
-}
-
-.login-box input{
-width:100%;
-padding:14px;
-border:none;
-border-radius:12px;
-margin-bottom:15px;
-font-size:16px;
-}
-
-.login-box button{
-width:100%;
-padding:14px;
-border:none;
-border-radius:12px;
-background:#00ff88;
-font-size:16px;
-font-weight:bold;
-cursor:pointer;
-    }
-/* ===========================
-   TBP AI v2.1 - Premium Header
-=========================== */
-
-body{
-    background:#0b0f19;
-    color:#ffffff;
-    font-family:'Poppins',sans-serif;
-}
-
-.header{
-    position:sticky;
-    top:0;
-    z-index:1000;
-
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-
-    padding:14px 18px;
-
-    background:rgba(17,24,39,.85);
-    backdrop-filter:blur(16px);
-
-    border-bottom:1px solid rgba(255,255,255,.08);
-}
-
-.header-left{
-    display:flex;
-    align-items:center;
-    gap:14px;
-}
-
-.logo-box{
-    display:flex;
-    align-items:center;
-    gap:12px;
 }
 
 .logo-icon{
 
-    width:48px;
-    height:48px;
+width:48px;
+height:48px;
 
-    border-radius:50%;
+border-radius:50%;
 
-    display:flex;
-    align-items:center;
-    justify-content:center;
+display:flex;
+justify-content:center;
+align-items:center;
 
-    font-size:22px;
+font-size:22px;
 
-    background:linear-gradient(135deg,#10a37f,#0ea5e9);
+background:linear-gradient(135deg,#10a37f,#0ea5e9);
 
-    box-shadow:0 0 18px rgba(16,163,127,.35);
-
-}
-
-.logo-box h2{
-
-    margin:0;
-    font-size:20px;
-    font-weight:700;
+box-shadow:0 0 20px rgba(16,163,127,.35);
 
 }
 
-.status{
+.logo h2{
 
-    display:block;
-
-    margin-top:3px;
-
-    color:#7dd3fc;
-
-    font-size:12px;
+font-size:20px;
+font-weight:700;
 
 }
 
-.header-right{
+.logo span{
 
-    display:flex;
-    gap:10px;
+display:block;
 
-}
+font-size:12px;
 
-.icon-btn{
+color:var(--muted);
 
-    width:42px;
-    height:42px;
-
-    border:none;
-
-    border-radius:50%;
-
-    cursor:pointer;
-
-    background:#1f2937;
-
-    color:#fff;
-
-    transition:.25s;
+margin-top:2px;
 
 }
 
-.icon-btn:hover{
+.header-buttons{
 
-    background:#10a37f;
-
-    transform:scale(1.08);
+display:flex;
+gap:10px;
 
 }
-/* ===========================
-   TBP AI v2.1 - Premium Chat
-=========================== */
+
+.header-buttons button{
+
+width:42px;
+height:42px;
+
+border:none;
+
+border-radius:50%;
+
+background:#1f2937;
+
+color:#fff;
+
+font-size:18px;
+
+cursor:pointer;
+
+transition:.25s;
+
+}
+
+.header-buttons button:hover{
+
+background:var(--primary);
+
+transform:scale(1.08);
+
+color:#fff;
+
+box-shadow:0 0 18px rgba(16,163,127,.35);
+
+}
+/* ===================================
+   TBP AI v3.0 Premium UI
+   Part 3 - Chat Area
+=================================== */
 
 #chatBox{
-    padding:20px;
-    display:flex;
-    flex-direction:column;
-    gap:16px;
-    overflow-y:auto;
-    scroll-behavior:smooth;
+
+flex:1;
+
+padding:22px;
+
+overflow-y:auto;
+
+display:flex;
+flex-direction:column;
+
+gap:18px;
+
+scroll-behavior:smooth;
+
 }
 
+/* Message */
+
 .message{
-    display:flex;
-    animation:fadeUp .3s ease;
+
+display:flex;
+
+width:100%;
+
+animation:messageFade .35s ease;
+
 }
 
 .user{
-    justify-content:flex-end;
+
+justify-content:flex-end;
+
 }
 
 .bot{
-    justify-content:flex-start;
+
+justify-content:flex-start;
+
 }
+
+/* Bubble */
 
 .bubble{
-    max-width:80%;
-    padding:14px 18px;
-    border-radius:20px;
-    line-height:1.7;
-    font-size:15px;
-    word-break:break-word;
-    box-shadow:0 6px 18px rgba(0,0,0,.18);
+
+max-width:82%;
+
+padding:16px 18px;
+
+border-radius:22px;
+
+font-size:15px;
+
+line-height:1.75;
+
+word-break:break-word;
+
+box-shadow:0 8px 25px rgba(0,0,0,.18);
+
+position:relative;
+
 }
+
+/* AI */
 
 .bot .bubble{
-    background:#1f2937;
-    color:#ffffff;
-    border:1px solid rgba(255,255,255,.06);
+
+background:#1f2937;
+
+border:1px solid rgba(255,255,255,.06);
+
+color:#ffffff;
+
+border-top-left-radius:8px;
+
 }
+
+/* User */
 
 .user .bubble{
-    background:linear-gradient(135deg,#10a37f,#0ea5e9);
-    color:#ffffff;
+
+background:linear-gradient(135deg,#10a37f,#0ea5e9);
+
+color:#ffffff;
+
+border-top-right-radius:8px;
+
 }
 
+/* Copy Button */
+
 .message-actions{
-    display:flex;
-    justify-content:flex-end;
-    gap:8px;
-    margin-top:10px;
+
+display:flex;
+
+justify-content:flex-end;
+
+margin-top:10px;
+
 }
 
 .message-actions button{
-    border:none;
-    background:transparent;
-    cursor:pointer;
-    color:#bdbdbd;
-    font-size:16px;
+
+background:transparent;
+
+border:none;
+
+color:#cbd5e1;
+
+font-size:16px;
+
+cursor:pointer;
+
+transition:.25s;
+
 }
 
 .message-actions button:hover{
-    color:#10a37f;
+
+color:#10a37f;
+
+transform:scale(1.1);
+
 }
 
-@keyframes fadeUp{
-    from{
-        opacity:0;
-        transform:translateY(12px);
+/* Typing */
+
+#typing{
+
+padding:0 22px 10px;
+
+font-size:14px;
+
+color:#94a3b8;
+
+display:none;
+
+}
+
+/* Animation */
+
+@keyframes messageFade{
+
+from{
+
+opacity:0;
+
+transform:translateY(15px);
+
+}
+
+to{
+
+opacity:1;
+
+transform:translateY(0);
+
+}
+
     }
-
-    to{
-        opacity:1;
-        transform:translateY(0);
-    }
-}
-.header{
-    display:flex !important;
-    justify-content:space-between !important;
-    align-items:center !important;
-}
-
-.header-right{
-    display:flex !important;
-    gap:10px !important;
-}
-
-.header-left{
-    display:flex !important;
-    align-items:center !important;
-    gap:15px !important;
-}
