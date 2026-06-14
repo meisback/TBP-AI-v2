@@ -376,3 +376,54 @@ console.log("TBP AI Script Loaded");
 loginBtn.onclick = () => {
     alert("Login Button Working!");
 };
+// ==============================
+// TBP AI v3.0
+// Phase 2B - Wallpaper System
+// ==============================
+
+const wallpaperBtn = document.getElementById("wallpaperBtn");
+const wallpaperPanel = document.getElementById("wallpaperPanel");
+const closeWallpaper = document.getElementById("closeWallpaper");
+const wallpapers = document.querySelectorAll(".wallpaper");
+
+// Open Panel
+if (wallpaperBtn) {
+    wallpaperBtn.addEventListener("click", () => {
+        wallpaperPanel.style.display = "flex";
+    });
+}
+
+// Close Panel
+if (closeWallpaper) {
+    closeWallpaper.addEventListener("click", () => {
+        wallpaperPanel.style.display = "none";
+    });
+}
+
+// Select Wallpaper
+wallpapers.forEach(item => {
+
+    item.addEventListener("click", () => {
+
+        const wall = item.dataset.wall;
+
+        document.body.style.backgroundImage =
+            `linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)),url('${wall}')`;
+
+        localStorage.setItem("tbp_wallpaper", wall);
+
+        wallpaperPanel.style.display = "none";
+
+    });
+
+});
+
+// Load Saved Wallpaper
+const savedWallpaper = localStorage.getItem("tbp_wallpaper");
+
+if (savedWallpaper) {
+
+    document.body.style.backgroundImage =
+        `linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)),url('${savedWallpaper}')`;
+
+}
