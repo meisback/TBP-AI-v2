@@ -366,3 +366,300 @@ transform:translateY(0);
 }
 
     }
+/* ===================================
+   TBP AI v3.0 Premium UI
+   Part 3 - Chat Area
+=================================== */
+
+#chatBox{
+
+flex:1;
+
+padding:22px;
+
+overflow-y:auto;
+
+display:flex;
+flex-direction:column;
+
+gap:18px;
+
+scroll-behavior:smooth;
+
+}
+
+/* Message */
+
+.message{
+
+display:flex;
+
+width:100%;
+
+animation:messageFade .35s ease;
+
+}
+
+.user{
+
+justify-content:flex-end;
+
+}
+
+.bot{
+
+justify-content:flex-start;
+
+}
+
+/* Bubble */
+
+.bubble{
+
+max-width:82%;
+
+padding:16px 18px;
+
+border-radius:22px;
+
+font-size:15px;
+
+line-height:1.75;
+
+word-break:break-word;
+
+box-shadow:0 8px 25px rgba(0,0,0,.18);
+
+position:relative;
+
+}
+
+/* AI */
+
+.bot .bubble{
+
+background:#1f2937;
+
+border:1px solid rgba(255,255,255,.06);
+
+color:#ffffff;
+
+border-top-left-radius:8px;
+
+}
+
+/* User */
+
+.user .bubble{
+
+background:linear-gradient(135deg,#10a37f,#0ea5e9);
+
+color:#ffffff;
+
+border-top-right-radius:8px;
+
+}
+
+/* Copy Button */
+
+.message-actions{
+
+display:flex;
+
+justify-content:flex-end;
+
+margin-top:10px;
+
+}
+
+.message-actions button{
+
+background:transparent;
+
+border:none;
+
+color:#cbd5e1;
+
+font-size:16px;
+
+cursor:pointer;
+
+transition:.25s;
+
+}
+
+.message-actions button:hover{
+
+color:#10a37f;
+
+transform:scale(1.1);
+
+}
+
+/* Typing */
+
+#typing{
+
+padding:0 22px 10px;
+
+font-size:14px;
+
+color:#94a3b8;
+
+display:none;
+
+}
+
+/* Animation */
+
+@keyframes messageFade{
+
+from{
+
+opacity:0;
+
+transform:translateY(15px);
+
+}
+
+to{
+
+opacity:1;
+
+transform:translateY(0);
+
+}
+
+   }
+/* ===================================
+   TBP AI v3.0 Premium UI
+   Part 4 - Input Area
+=================================== */
+
+footer{
+
+position:sticky;
+bottom:0;
+
+padding:16px 18px;
+
+background:rgba(17,24,39,.82);
+
+backdrop-filter:blur(18px);
+
+border-top:1px solid rgba(255,255,255,.08);
+
+display:flex;
+align-items:center;
+gap:12px;
+
+}
+
+/* Input */
+
+#userInput{
+
+flex:1;
+
+min-height:54px;
+max-height:160px;
+
+padding:14px 18px;
+
+border:none;
+outline:none;
+
+border-radius:30px;
+
+background:#1f2937;
+
+color:#fff;
+
+font-size:15px;
+
+transition:.25s;
+
+}
+
+#userInput::placeholder{
+
+color:#94a3b8;
+
+}
+
+#userInput:focus{
+
+box-shadow:0 0 0 2px rgba(16,163,127,.35);
+
+}
+
+/* Footer Buttons */
+
+footer button{
+
+width:50px;
+height:50px;
+
+border:none;
+
+border-radius:50%;
+
+cursor:pointer;
+
+transition:.25s;
+
+font-size:20px;
+
+}
+
+/* Attachment */
+
+#attachBtn{
+
+background:#1f2937;
+
+color:#fff;
+
+}
+
+#attachBtn:hover{
+
+background:#374151;
+
+}
+
+/* Voice */
+
+#voiceBtn{
+
+background:#1f2937;
+
+color:#fff;
+
+}
+
+#voiceBtn:hover{
+
+background:#374151;
+
+}
+
+/* Send */
+
+#sendBtn{
+
+background:linear-gradient(135deg,#10a37f,#0ea5e9);
+
+color:#fff;
+
+box-shadow:0 0 20px rgba(16,163,127,.35);
+
+}
+
+#sendBtn:hover{
+
+transform:scale(1.08);
+
+box-shadow:0 0 28px rgba(16,163,127,.55);
+
+}
