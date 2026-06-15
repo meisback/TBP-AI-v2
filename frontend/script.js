@@ -137,8 +137,7 @@ function addMessage(text, sender){
     const bubble = document.createElement("div");
     bubble.className = "bubble";
 
-    bubble.innerHTML = text;
-
+    bubble.innerHTML = formatMessage(text);
     const info = document.createElement("div");
     info.className = "message-info";
 
@@ -208,7 +207,24 @@ const text = userInput.value.trim();
 if(!text) return;
 
 addMessage(text,"user");
+// =====================================
+// Phase 3A - Markdown Support
+// =====================================
 
+function formatMessage(text){
+
+    return text
+
+        // Bold **text**
+        .replace(/\*\*(.*?)\*\*/g,"<b>$1</b>")
+
+        // Italic *text*
+        .replace(/\*(.*?)\*/g,"<i>$1</i>")
+
+        // Line breaks
+        .replace(/\n/g,"<br>");
+
+}
 messages.push({
     role:"user",
     content:text
