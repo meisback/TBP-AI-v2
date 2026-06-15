@@ -2,230 +2,236 @@
 <html lang="bn">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TBP AI v3.0</title>
 
-<meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<title>TBP AI v3.0</title>
-
-<link rel="stylesheet" href="style.css">
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
 <!-- Login Screen -->
+<div id="loginScreen" class="login-screen">
 
-<div id="loginScreen">
+    <div class="login-card">
 
-<div class="login-box">
+        <div class="login-logo">
+            🤖
+        </div>
 
-<h1>🤖 TBP AI</h1>
+        <h1>TBP AI v3.0</h1>
 
-<p>Welcome Back</p>
+        <p>Welcome Back</p>
 
-<input
-type="text"
-id="username"
-placeholder="Enter your name">
+        <input
+            type="text"
+            id="username"
+            placeholder="Enter your name"
+            autocomplete="off">
 
-<button id="loginBtn">
-Continue
-</button>
+        <button id="loginBtn">
+            Continue
+        </button>
 
-</div>
+    </div>
 
 </div>
 
 <!-- Main App -->
-
 <div class="app">
 
-<!-- Header -->
+    <!-- Header -->
+    <header class="header">
 
-<header>
+        <div class="header-left">
 
-<div class="logo">
+            <div class="logo-circle">
+                🤖
+            </div>
 
-<div class="logo-icon">
-🤖
-</div>
+            <div>
 
-<div>
+                <h2>TBP AI</h2>
 
-<h2>TBP AI v3.0</h2>
+                <span>Professional AI Assistant</span>
 
-<span>Professional AI Assistant</span>
+            </div>
 
-</div>
+        </div>
 
-</div>
+        <div class="header-right">
 
-<div class="header-buttons">
+            <button id="newChatBtn" class="icon-btn">+</button>
 
-<button id="newChatBtn" title="New Chat">+</button>
+            <button id="themeBtn" class="icon-btn">🌙</button>
 
-<button id="themeBtn" title="Theme">🌙</button>
+            <button id="wallpaperBtn" class="icon-btn">🖼️</button>
 
-<button id="wallpaperBtn" title="Wallpaper">🖼️</button>
+            <button id="settingsBtn" class="icon-btn">⚙️</button>
 
-<button id="profileBtn" title="Profile">👤</button>
+            <button id="profileBtn" class="icon-btn">👤</button>
 
-<button id="logoutBtn" title="Logout">🚪</button>
+        </div>
 
-</div>
+    </header>
 
-</header>
+    <!-- Chat Area -->
 
-<!-- Chat -->
+    <main id="chatBox" class="chat-box">
 
-<main id="chatBox">
+        <div class="bot message">
 
-<div class="bot message">
+            <div class="bubble">
 
-<div class="bubble">
+                👋 <b>স্বাগতম!</b>
 
-👋 <b>স্বাগতম!</b>
+                <br><br>
 
-<br><br>
+                আমি <b>TBP AI v3.0</b>
 
-আমি <b>TBP AI v3.0</b>
+                <br><br>
 
-<br><br>
+                আপনার যেকোনো প্রশ্ন করতে পারেন।
 
-বাংলা, English অথবা Hinglish-এ প্রশ্ন করতে পারেন।
+            </div>
 
-</div>
+        </div>
+        </main>
 
-</div>
-</main>
+  <!-- Typing Indicator -->
+  <div id="typing" class="typing" style="display:none;">
+    <div class="typing-bubble">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
 
-<!-- Typing Indicator -->
+  <!-- Input Area -->
+  <footer class="input-area">
 
-<div id="typing" class="typing">
-
-    TBP AI লিখছে...
-
-</div>
-
-<!-- Input Area -->
-
-<footer>
-
-    <button id="attachBtn" title="Attach File">
-        📎
+    <button id="attachBtn" class="icon-btn" title="Attach File">
+      📎
     </button>
 
-    <input
-        id="userInput"
-        type="text"
-        placeholder="Message TBP AI..."
-        autocomplete="off"
-    >
+    <textarea
+      id="userInput"
+      placeholder="Message TBP AI..."
+      rows="1"
+    ></textarea>
 
-    <button id="voiceBtn" title="Voice">
-        🎤
+    <button id="voiceBtn" class="icon-btn" title="Voice">
+      🎤
     </button>
 
-    <button id="sendBtn" title="Send">
-        ➤
+    <button id="sendBtn" class="send-btn" title="Send">
+      ➤
     </button>
 
-</footer>
+  </footer>
 
 </div>
 
 <!-- Wallpaper Panel -->
 
-<div id="wallpaperPanel" class="overlay">
+<div id="wallpaperPanel" class="modal">
 
-    <div class="settings-panel">
+  <div class="modal-content">
 
-        <h2>🖼️ Choose Wallpaper</h2>
+    <h2>🖼️ Choose Wallpaper</h2>
 
-        <div class="wallpaper-grid">
+    <div class="wallpaper-grid">
 
-            <div class="wallpaper" data-wall="wallpapers/wall1.jpg"
-            style="background-image:url('wallpapers/wall1.jpg')"></div>
+      <div class="wallpaper" data-wall="wallpapers/wall1.jpg"></div>
 
-            <div class="wallpaper" data-wall="wallpapers/wall2.jpg"
-            style="background-image:url('wallpapers/wall2.jpg')"></div>
+      <div class="wallpaper" data-wall="wallpapers/wall2.jpg"></div>
 
-            <div class="wallpaper" data-wall="wallpapers/wall3.jpg"
-            style="background-image:url('wallpapers/wall3.jpg')"></div>
+      <div class="wallpaper" data-wall="wallpapers/wall3.jpg"></div>
 
-            <div class="wallpaper" data-wall="wallpapers/wall4.jpg"
-            style="background-image:url('wallpapers/wall4.jpg')"></div>
+      <div class="wallpaper" data-wall="wallpapers/wall4.jpg"></div>
 
-            <div class="wallpaper" data-wall="wallpapers/wall5.jpg"
-            style="background-image:url('wallpapers/wall5.jpg')"></div>
+      <div class="wallpaper" data-wall="wallpapers/wall5.jpg"></div>
 
-            <div class="wallpaper" data-wall="wallpapers/wall6.jpg"
-            style="background-image:url('wallpapers/wall6.jpg')"></div>
-
-        </div>
-
-        <button id="closeWallpaper" class="close-panel">
-
-            Close
-
-        </button>
+      <div class="wallpaper" data-wall="wallpapers/wall6.jpg"></div>
 
     </div>
+
+    <button id="closeWallpaper" class="close-btn">
+
+      Close
+
+    </button>
+
+  </div>
 
 </div>
 <!-- Settings Panel -->
+<div id="settingsPanel" class="modal">
 
-<div id="settingsPanel" class="overlay">
+  <div class="modal-content">
 
-    <div class="settings-panel">
+    <h2>⚙️ Settings</h2>
 
-        <h2>⚙️ Settings</h2>
-
-        <div class="setting-item">
-
-            <span>🌙 Theme</span>
-
-            <button id="themeSwitchBtn" class="setting-btn">
-                Change
-            </button>
-
-        </div>
-
-        <div class="setting-item">
-
-            <span>🖼️ Wallpaper</span>
-
-            <button id="openWallpaperBtn" class="setting-btn">
-                Open
-            </button>
-
-        </div>
-
-        <div class="setting-item">
-
-            <span>ℹ️ Version</span>
-
-            <span>TBP AI v3.0</span>
-
-        </div>
-
-        <button id="closeSettings" class="close-panel">
-            Close
-        </button>
-
+    <div class="setting-item">
+      <span>🌙 Theme</span>
+      <button id="themeSwitchBtn" class="setting-btn">Toggle</button>
     </div>
+
+    <div class="setting-item">
+      <span>🖼️ Wallpaper</span>
+      <button id="openWallpaperBtn" class="setting-btn">Open</button>
+    </div>
+
+    <div class="setting-item">
+      <span>🗑️ Clear Chat</span>
+      <button id="clearChatBtn" class="setting-btn">Clear</button>
+    </div>
+
+    <button id="closeSettings" class="close-btn">
+      Close
+    </button>
+
+  </div>
+
+</div>
+
+<!-- Profile Panel -->
+<div id="profilePanel" class="modal">
+
+  <div class="modal-content">
+
+    <div class="profile-avatar">
+      👤
+    </div>
+
+    <h2 id="profileName">
+      Guest
+    </h2>
+
+    <p>
+      TBP AI v3.0 Pro User
+    </p>
+
+    <button id="logoutBtn" class="close-btn">
+      Logout
+    </button>
+
+    <button id="closeProfile" class="close-btn">
+      Close
+    </button>
+
+  </div>
 
 </div>
 
 <script src="script.js"></script>
 
 </body>
-</html>
+    </html>
