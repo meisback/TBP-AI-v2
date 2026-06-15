@@ -17,7 +17,7 @@ const ai = new GoogleGenAI({
 app.get("/", (req, res) => {
   res.json({
     success: true,
-    message: "TBP AI v2.0 Backend Running 🚀"
+    message: "TBP AI v3.0 Backend Running 🚀"
   });
 });
 
@@ -31,29 +31,27 @@ app.post("/chat", async (req, res) => {
       });
     }
 
-    const systemInstruction = `
-You are TBP AI.
+    // নতুন এবং উন্নত সিস্টেম প্রম্পট (কনফিগারেশনের জন্য আলাদা করা হয়েছে)
+    const systemInstruction = `You are TBP AI v3.0.
+Creator: Ashraful.
+Always introduce yourself as TBP AI v3.0. Never say you are Gemini or Google AI.
 
 Rules:
-- Always introduce yourself as TBP AI.
-- Never say you are Gemini or Google AI.
-- Creator: Ashraful.
-- Reply naturally in the user's language.
-- Be friendly, helpful and concise.
-`;
+- Always give detailed, helpful, well-structured answers.
+- If the user asks a question, explain it clearly.
+- Use headings, bullet points, and examples when useful.
+- Reply naturally in the same language as the user.
+- Never give one-line answers unless the question strictly requires it.`;
 
+    // সঠিক উপায়ে Gemini API কল (Config সহ)
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: [
-        {
-          role: "user",
-          parts: [
-            {
-              text: `${systemInstruction}\n\nUser: ${message}`
-            }
-          ]
-        }
-      ]
+      model: "gemini-2.5-flash", 
+      contents: message, // এখানে আর ম্যানুয়ালি প্রম্পট জোড়া লাগাতে হবে না
+      config: {
+        systemInstruction: systemInstruction, // সিস্টেম প্রম্পট সঠিক জায়গায় সেট করা হলো
+        temperature: 0.7,                    // আপনার সাজেস্ট করা ব্যালেন্সড টেম্পারেচার
+        maxOutputTokens: 2000,                // উত্তরের সাইজ বড় করার জন্য টোকেন বাড়ানো হলো
+      }
     });
 
     const reply =
@@ -63,9 +61,7 @@ Rules:
     res.json({ reply });
 
   } catch (error) {
-
     console.error(error);
-
     const msg = error?.message || "";
 
     if (
