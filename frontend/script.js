@@ -134,19 +134,18 @@ function addMessage(text, sender){
         ? "👤"
         : "🤖";
 
-         const bubble = document.createElement("div");
-  bubble.className = "bubble";
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
 
-  if (sender === "bot") {
-      bubble.innerHTML = marked.parse(text);
-   } else {
-        bubble.innerHTML = text;
-  }
+    bubble.innerHTML = text;
 
-  const info = document.createElement("div");
-  info.className = "message-info";
-    
-    
+    const info = document.createElement("div");
+    info.className = "message-info";
+
+    const time = new Date().toLocaleTimeString([],{
+        hour:"2-digit",
+        minute:"2-digit"
+    });
 
     const copyBtn = document.createElement("button");
     copyBtn.className = "copy-btn";
