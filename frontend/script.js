@@ -220,7 +220,7 @@ userInput.value="";
 userInput.style.height="54px";
 
 showTyping();
-
+createThinkingBubble();
 try{
 
     const response = await fetch(API_URL,{
@@ -244,7 +244,7 @@ try{
     const data = await response.json();
 
     hideTyping();
-
+removeThinkingBubble();
     const reply =
         data.reply ||
         "⚠️ কোনো উত্তর পাওয়া যায়নি।";
@@ -264,7 +264,7 @@ try{
 }catch(error){
 
     hideTyping();
-
+removeThinkingBubble();
     addMessage(
 
         "❌ সার্ভারের সাথে সংযোগ করা যাচ্ছে না।",
@@ -485,3 +485,52 @@ userInput.style.height="54px";
 userInput.style.height=userInput.scrollHeight+"px";
 
 });
+// =====================================
+// Phase 2A - AI Thinking Animation
+// =====================================
+
+function createThinkingBubble(){
+
+    const thinking=document.createElement("div");
+
+    thinking.className="bot message";
+
+    thinking.id="thinkingBubble";
+
+    thinking.innerHTML=`
+
+        <div class="avatar">🤖</div>
+
+        <div class="bubble">
+
+            <div class="thinking">
+
+                <span></span>
+
+                <span></span>
+
+                <span></span>
+
+            </div>
+
+        </div>
+
+    `;
+
+    chatBox.appendChild(thinking);
+
+    scrollBottom();
+
+}
+
+function removeThinkingBubble(){
+
+    const bubble=document.getElementById("thinkingBubble");
+
+    if(bubble){
+
+        bubble.remove();
+
+    }
+
+}
