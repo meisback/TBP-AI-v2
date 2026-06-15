@@ -117,24 +117,86 @@ localStorage.setItem(
 
 }
 // =====================================
-// Part 2 - Chat System + AI API
+// TBP AI v3.0 Pro
+// Professional addMessage()
 // =====================================
 
-// Add Message
 function addMessage(text, sender){
 
-const message = document.createElement("div");
-message.className = sender + " message";
+    const message = document.createElement("div");
+    message.className = sender + " message";
 
-const bubble = document.createElement("div");
-bubble.className = "bubble";
-bubble.innerHTML = text;
+    const avatar = document.createElement("div");
+    avatar.className = "avatar";
 
-message.appendChild(bubble);
+    avatar.innerHTML =
+        sender === "user"
+        ? "👤"
+        : "🤖";
 
-chatBox.appendChild(message);
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
 
-scrollBottom();
+    bubble.innerHTML = text;
+
+    const info = document.createElement("div");
+    info.className = "message-info";
+
+    const time = new Date().toLocaleTimeString([],{
+        hour:"2-digit",
+        minute:"2-digit"
+    });
+
+    const copyBtn = document.createElement("button");
+    copyBtn.className = "copy-btn";
+    copyBtn.innerHTML = "📋";
+
+    copyBtn.onclick = async ()=>{
+
+        try{
+
+            await navigator.clipboard.writeText(text);
+
+            copyBtn.innerHTML="✅";
+
+            setTimeout(()=>{
+
+                copyBtn.innerHTML="📋";
+
+            },1500);
+
+        }catch{
+
+            alert("Copy Failed");
+
+        }
+
+    };
+
+    info.innerHTML =
+        "<span>"+time+"</span>";
+
+    info.appendChild(copyBtn);
+
+    bubble.appendChild(info);
+
+    if(sender==="user"){
+
+        message.appendChild(bubble);
+
+        message.appendChild(avatar);
+
+    }else{
+
+        message.appendChild(avatar);
+
+        message.appendChild(bubble);
+
+    }
+
+    chatBox.appendChild(message);
+
+    scrollBottom();
 
 }
 
