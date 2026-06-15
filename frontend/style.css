@@ -896,3 +896,317 @@ textarea{
     transform:scale(1.1);
 
 }
+/* ==========================================
+   Phase 2B - Premium Header
+========================================== */
+
+.header{
+
+    position:sticky;
+    top:0;
+    z-index:1000;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:14px 18px;
+
+    background:rgba(15,23,42,.90);
+    backdrop-filter:blur(18px);
+
+    border-bottom:1px solid rgba(255,255,255,.08);
+
+}
+
+.header-left{
+
+    display:flex;
+    align-items:center;
+    gap:14px;
+
+}
+
+.ai-logo{
+
+    width:52px;
+    height:52px;
+
+    border-radius:50%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:26px;
+
+    background:linear-gradient(135deg,#10a37f,#2563eb);
+
+    box-shadow:0 0 20px rgba(16,163,127,.35);
+
+}
+
+.header-title h2{
+
+    margin:0;
+
+    font-size:22px;
+
+    font-weight:700;
+
+    color:#ffffff;
+
+}
+
+.header-title span{
+
+    display:block;
+
+    margin-top:2px;
+
+    font-size:12px;
+
+    color:#9ca3af;
+
+}
+
+.header-right{
+
+    display:flex;
+    gap:10px;
+
+}
+
+.top-btn{
+
+    width:42px;
+    height:42px;
+
+    border:none;
+    border-radius:50%;
+
+    background:#1f2937;
+
+    color:#fff;
+
+    font-size:18px;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+.top-btn:hover{
+
+    background:#10a37f;
+
+    transform:scale(1.08);
+
+}
+/* ==========================================
+   Phase 2B - Premium Input Bar
+========================================== */
+
+footer{
+
+    position:sticky;
+    bottom:0;
+
+    display:flex;
+    align-items:flex-end;
+    gap:12px;
+
+    padding:16px 18px;
+
+    background:rgba(15,23,42,.92);
+
+    backdrop-filter:blur(20px);
+
+    border-top:1px solid rgba(255,255,255,.08);
+
+}
+
+#userInput{
+
+    flex:1;
+
+    min-height:54px;
+    max-height:180px;
+
+    resize:none;
+
+    padding:15px 20px;
+
+    border:none;
+    outline:none;
+
+    border-radius:28px;
+
+    background:#111827;
+
+    color:#fff;
+
+    font-size:15px;
+
+    line-height:1.6;
+
+    transition:.25s;
+
+}
+
+#userInput:focus{
+
+    box-shadow:0 0 0 2px rgba(16,163,127,.45);
+
+}
+
+#userInput::placeholder{
+
+    color:#9ca3af;
+
+}
+
+#sendBtn{
+
+    width:56px;
+    height:56px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:linear-gradient(135deg,#10a37f,#14b8a6);
+
+    color:#fff;
+
+    font-size:24px;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    box-shadow:0 8px 24px rgba(16,163,127,.35);
+
+}
+
+#sendBtn:hover{
+
+    transform:scale(1.08);
+
+}
+
+#sendBtn:active{
+
+    transform:scale(.95);
+
+}
+/* ==========================================
+   Phase 2B - Chat Animation
+========================================== */
+
+/* Message Animation */
+
+.message{
+
+    animation:messageFade .35s ease;
+
+}
+
+@keyframes messageFade{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(18px) scale(.98);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0) scale(1);
+
+    }
+
+}
+
+/* Bubble */
+
+.bubble{
+
+    position:relative;
+
+    transition:.25s;
+
+}
+
+.bubble:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:0 12px 30px rgba(0,0,0,.28);
+
+}
+
+/* AI Bubble */
+
+.bot .bubble{
+
+    border-left:4px solid #10a37f;
+
+}
+
+/* User Bubble */
+
+.user .bubble{
+
+    border-right:4px solid #14b8a6;
+
+}
+
+/* Chat Box */
+
+#chatBox{
+
+    scroll-behavior:smooth;
+
+}
+
+/* Mobile */
+
+@media(max-width:600px){
+
+    .bubble{
+
+        max-width:92%;
+
+        font-size:14px;
+
+    }
+
+    .avatar{
+
+        width:36px;
+
+        height:36px;
+
+        font-size:18px;
+
+    }
+
+    .header-title h2{
+
+        font-size:18px;
+
+    }
+
+    .header-title span{
+
+        font-size:11px;
+
+    }
+
+}
