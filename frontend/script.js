@@ -1,5 +1,5 @@
 /* ==========================================================================
-   TBP AI v3.1 Professional - Core Intelligence Engine (Part 1 - Safe Storage)
+   TBP AI v3.1 Professional - Core Intelligence Engine (Part 1)
    ========================================================================== */
 
 (function () {
@@ -11,7 +11,7 @@
         PROFILE_AVATAR: "tbp_user_avatar",
         THEME: "tbp_theme_mode",
         CHAT_HISTORY: "tbp_conversations",
-        USER_API_KEY: "tbp_openai_api_key" // ব্রাউজারে কি সেভ রাখার চাবি
+        USER_API_KEY: "tbp_openai_api_key"
     };
 
     let appState = {
@@ -92,7 +92,7 @@
         }
         loadSystemState();
         applyVisualThemes();
-        injectAPIKeyInputInSettings(); // সেটিংস বক্সে ইনপুট ফিল্ড তৈরি করবে
+        injectAPIKeyInputInSettings(); 
         renderChatHistoryList();
         registerEventHandlers();
         checkAuthentication();
@@ -104,9 +104,11 @@
         const storedUser = localStorage.getItem(STORAGE_KEYS.USER_SESSION);
         if (storedUser) {
             appState.currentUser = storedUser;
-            DOM.loginScreen.style.opacity = "0";
-            setTimeout(() => DOM.loginScreen.style.display = "none", 400);
-            DOM.editProfileName.value = storedUser;
+            if (DOM.loginScreen) {
+                DOM.loginScreen.style.opacity = "0";
+                setTimeout(() => DOM.loginScreen.style.display = "none", 400);
+            }
+            if (DOM.editProfileName) DOM.editProfileName.value = storedUser;
             syncAvatarUI();
             if (Object.keys(appState.conversations).length === 0) {
                 createNewConversation();
@@ -115,8 +117,10 @@
                 switchConversation(keys[keys.length - 1]);
             }
         } else {
-            DOM.loginScreen.style.display = "flex";
-            DOM.loginScreen.style.opacity = "1";
+            if (DOM.loginScreen) {
+                DOM.loginScreen.style.display = "flex";
+                DOM.loginScreen.style.opacity = "1";
+            }
         }
     }
 
@@ -131,8 +135,8 @@
         }
     }
 
-    // সেটিংস প্যানেলে অটোমেটিক একটি সুন্দর API Key ইনপুট বক্স যুক্ত করার লজিক
     function injectAPIKeyInputInSettings() {
+        if (!DOM.settingsPanel) return;
         const savedKey = localStorage.getItem(STORAGE_KEYS.USER_API_KEY) || "";
         const keyGroup = document.createElement("div");
         keyGroup.style.margin = "15px 0";
@@ -143,7 +147,11 @@
             <button id="saveKeyBtn" style="margin-top:8px; width:100%; padding:6px; background:var(--primary); color:white; border:none; border-radius:5px; cursor:pointer; font-size:12px;">🔑 চাবি সেভ করুন</button>
         `;
         const container = DOM.settingsPanel.querySelector(".panel-content") || DOM.settingsPanel;
-        container.insertBefore(keyGroup, DOM.clearChatBtn);
+        if (DOM.clearChatBtn) {
+            container.insertBefore(keyGroup, DOM.clearChatBtn);
+        } else {
+            container.appendChild(keyGroup);
+        }
 
         document.getElementById("saveKeyBtn").addEventListener("click", () => {
             const keyVal = document.getElementById("userApiKeyInput").value.trim();
@@ -165,18 +173,19 @@
             document.documentElement.style.setProperty('--text', '#1f2937');
             document.documentElement.style.setProperty('--muted', '#6b7280');
             document.documentElement.style.setProperty('--card', 'rgba(255,255,255,0.8)');
-            DOM.themeBtn.textContent = "☀️";
+            if (DOM.themeBtn) DOM.themeBtn.textContent = "☀️";
         } else {
             document.documentElement.style.setProperty('--bg', '#0b1220');
             document.documentElement.style.setProperty('--surface', '#111827');
             document.documentElement.style.setProperty('--text', '#ffffff');
             document.documentElement.style.setProperty('--muted', '#9ca3af');
             document.documentElement.style.setProperty('--card', 'rgba(17,24,39,.75)');
-            DOM.themeBtn.textContent = "🌙";
+            if (DOM.themeBtn) DOM.themeBtn.textContent = "🌙";
         }
     }
 
     function syncAvatarUI() {
+        if (!DOM.profileAvatarDisplay) return;
         if (appState.userAvatar.startsWith("data:image")) {
             DOM.profileAvatarDisplay.textContent = "";
             DOM.profileAvatarDisplay.style.backgroundImage = `url(${appState.userAvatar})`;
@@ -207,6 +216,7 @@
     }
 
     function loadActiveChatUI() {
+        if (!DOM.chatBox) return;
         DOM.chatBox.innerHTML = "";
         const currentChat = appState.conversations[appState.activeChatId];
         if (!currentChat || currentChat.messages.length === 0) {
@@ -216,7 +226,7 @@
                     <div class="message-content-wrap">
                         <div class="message-bubble">
                             👋 <b>স্বাগতম ${appState.currentUser}!</b><br><br>
-                            আমি আপনার পার্সোনাল এআই অ্যাসিস্ট্যান্ট। শুরু করার আগে নিচের গিয়ার (⚙️) আইকনে ক্লিক করে আপনার <b>OpenAI API Key</b> টি সেভ করে নিন।
+                            আমি আপনার পার্সোনাল এআই অ্যাসিস্ট্যান্ট। চ্যাট শুরু করার আগে আপনার ডানপাশের গিয়ার (⚙️) আইকনে ক্লিক করে <b>OpenAI API Key</b> টি অবশ্যই সেট করে নিন।
                         </div>
                         <div class="message-meta"><span class="timestamp">System</span></div>
                     </div>
@@ -230,6 +240,7 @@
     }
 
     function renderChatHistoryList(filterKeyword = "") {
+        if (!DOM.chatHistoryZone) return;
         DOM.chatHistoryZone.innerHTML = "";
         Object.keys(appState.conversations).reverse().forEach(id => {
             const chat = appState.conversations[id];
@@ -240,9 +251,9 @@
             pill.addEventListener("click", () => switchConversation(id));
             DOM.chatHistoryZone.appendChild(pill);
         });
-           }
+       }
        /* ==========================================================================
-       TBP AI v3.1 Professional - Core Intelligence Engine (Part 2 - Safe Storage)
+       TBP AI v3.1 Professional - Core Intelligence Engine (Part 2)
        ========================================================================== */
 
     function appendMessageToDOM(role, content, timestamp, index, files = []) {
@@ -375,7 +386,6 @@
         const activeChat = appState.conversations[appState.activeChatId];
         if (!activeChat || activeChat.messages.length === 0) return;
 
-        // লোকাল স্টোরেজ থেকে ইউজারের সেভ করা চাবিটি রিড করবে
         const userSavedKey = localStorage.getItem(STORAGE_KEYS.USER_API_KEY);
         if (!userSavedKey) {
             activeChat.messages.push({
@@ -387,9 +397,9 @@
             return;
         }
 
-        DOM.typingIndicator.style.display = "flex";
-        DOM.sendBtn.style.display = "none";
-        DOM.stopGenerationBtn.style.display = "flex";
+        if(DOM.typingIndicator) DOM.typingIndicator.style.display = "flex";
+        if(DOM.sendBtn) DOM.sendBtn.style.display = "none";
+        if(DOM.stopGenerationBtn) DOM.stopGenerationBtn.style.display = "flex";
         DOM.chatBox.scrollTop = DOM.chatBox.scrollHeight;
 
         appState.abortController = new AbortController();
@@ -408,7 +418,7 @@
                     method: "POST",
                     headers: { 
                         "Content-Type": "application/json",
-                        "Authorization": `Bearer ${userSavedKey}` // ইউজারের নিজের চাবি পাঠানো হচ্ছে
+                        "Authorization": `Bearer ${userSavedKey}`
                     },
                     body: JSON.stringify({ 
                         model: API_CONFIG.MODEL,
@@ -440,9 +450,9 @@
             }
         }
 
-        DOM.typingIndicator.style.display = "none";
-        DOM.sendBtn.style.display = "flex";
-        DOM.stopGenerationBtn.style.display = "none";
+        if(DOM.typingIndicator) DOM.typingIndicator.style.display = "none";
+        if(DOM.sendBtn) DOM.sendBtn.style.display = "flex";
+        if(DOM.stopGenerationBtn) DOM.stopGenerationBtn.style.display = "none";
         appState.abortController = null;
 
         localStorage.setItem(STORAGE_KEYS.CHAT_HISTORY, JSON.stringify(appState.conversations));
@@ -463,6 +473,7 @@
     }
 
     function renderAttachmentPills() {
+        if(!DOM.attachmentPreviewBar) return;
         DOM.attachmentPreviewBar.innerHTML = "";
         if (appState.uploadedFiles.length === 0) {
             DOM.attachmentPreviewBar.style.display = "none";
@@ -487,62 +498,71 @@
 
     function setupDragAndDrop() {
         const dropZone = document.querySelector(".main-container");
+        if(!dropZone) return;
         ['dragenter', 'dragover'].forEach(name => dropZone.addEventListener(name, (e) => { e.preventDefault(); dropZone.style.opacity = "0.8"; }, false));
         ['dragleave', 'drop'].forEach(name => dropZone.addEventListener(name, (e) => { e.preventDefault(); dropZone.style.opacity = "1"; }, false));
         dropZone.addEventListener('drop', (e) => { if (e.dataTransfer.files.length > 0) handleSelectedFiles(e.dataTransfer.files); });
     }
 
     function registerEventHandlers() {
-        DOM.loginBtn.addEventListener("click", () => {
-            const val = DOM.usernameInput.value.trim();
-            if (!val) return alert("একটি নাম প্রদান করুন।");
-            localStorage.setItem(STORAGE_KEYS.USER_SESSION, val);
-            checkAuthentication();
-        });
+        if (DOM.loginBtn) {
+            DOM.loginBtn.addEventListener("click", () => {
+                const val = DOM.usernameInput.value.trim();
+                if (!val) return alert("একটি নাম প্রদান করুন।");
+                localStorage.setItem(STORAGE_KEYS.USER_SESSION, val);
+                checkAuthentication();
+            });
+        }
 
-        DOM.sendBtn.addEventListener("click", processIncomingUserPrompt);
-        DOM.userInput.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); processIncomingUserPrompt(); } });
-        DOM.userInput.addEventListener("input", autoResizeTextArea);
-        DOM.stopGenerationBtn.addEventListener("click", () => { if (appState.abortController) appState.abortController.abort(); });
-        DOM.mobileMenuBtn.addEventListener("click", () => DOM.sidebarPanel.classList.toggle("mobile-open"));
-        DOM.newChatBtn.addEventListener("click", createNewConversation);
-        DOM.sidebarNewChatBtn.addEventListener("click", createNewConversation);
-        DOM.searchChatInput.addEventListener("input", (e) => renderChatHistoryList(e.target.value));
+        if(DOM.sendBtn) DOM.sendBtn.addEventListener("click", processIncomingUserPrompt);
+        if(DOM.userInput) {
+            DOM.userInput.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); processIncomingUserPrompt(); } });
+            DOM.userInput.addEventListener("input", autoResizeTextArea);
+        }
+        if(DOM.stopGenerationBtn) DOM.stopGenerationBtn.addEventListener("click", () => { if (appState.abortController) appState.abortController.abort(); });
+        if(DOM.mobileMenuBtn) DOM.mobileMenuBtn.addEventListener("click", () => DOM.sidebarPanel.classList.toggle("mobile-open"));
+        if(DOM.newChatBtn) DOM.newChatBtn.addEventListener("click", createNewConversation);
+        if(DOM.sidebarNewChatBtn) DOM.sidebarNewChatBtn.addEventListener("click", createNewConversation);
+        if(DOM.searchChatInput) DOM.searchChatInput.addEventListener("input", (e) => renderChatHistoryList(e.target.value));
 
-        setupPanelToggle(DOM.wallpaperBtn, DOM.wallpaperPanel, DOM.closeWallpaper);
-        setupPanelToggle(DOM.settingsBtn, DOM.settingsPanel, DOM.closeSettings);
-        setupPanelToggle(DOM.profileBtn, DOM.profilePanel, DOM.closeProfile);
+        if(DOM.wallpaperBtn) setupPanelToggle(DOM.wallpaperBtn, DOM.wallpaperPanel, DOM.closeWallpaper);
+        if(DOM.settingsBtn) setupPanelToggle(DOM.settingsBtn, DOM.settingsPanel, DOM.closeSettings);
+        if(DOM.profileBtn) setupPanelToggle(DOM.profileBtn, DOM.profilePanel, DOM.closeProfile);
 
-        DOM.themeBtn.addEventListener("click", toggleThemeMode);
-        DOM.themeSwitchBtn.addEventListener("click", toggleThemeMode);
-        DOM.clearChatBtn.addEventListener("click", () => {
-            if (confirm("সব মেসেজ মুছবেন?") && appState.conversations[appState.activeChatId]) {
-                appState.conversations[appState.activeChatId].messages = [];
-                localStorage.setItem(STORAGE_KEYS.CHAT_HISTORY, JSON.stringify(appState.conversations));
-                loadActiveChatUI();
-            }
-        });
+        if(DOM.themeBtn) DOM.themeBtn.addEventListener("click", toggleThemeMode);
+        if(DOM.themeSwitchBtn) DOM.themeSwitchBtn.addEventListener("click", toggleThemeMode);
+        if(DOM.clearChatBtn) {
+            DOM.clearChatBtn.addEventListener("click", () => {
+                if (confirm("সব মেসেজ মুছবেন?") && appState.conversations[appState.activeChatId]) {
+                    appState.conversations[appState.activeChatId].messages = [];
+                    localStorage.setItem(STORAGE_KEYS.CHAT_HISTORY, JSON.stringify(appState.conversations));
+                    loadActiveChatUI();
+                }
+            });
+        }
 
-        DOM.exportChatBtn.addEventListener("click", () => {
-            const chat = appState.conversations[appState.activeChatId];
-            if (!chat || chat.messages.length === 0) return alert("কোনো মেসেজ নেই।");
-            let txt = `=== TBP AI Log ===\nTitle: ${chat.title}\n\n`;
-            chat.messages.forEach(m => txt += `[${m.timestamp}] ${m.role.toUpperCase()}: ${m.content}\n`);
-            const blob = new Blob([txt], { type: "text/plain;charset=utf-8" });
-            const a = document.createElement("a");
-            a.href = URL.createObjectURL(blob);
-            a.download = `chat_log.txt`;
-            a.click();
-        });
+        if(DOM.exportChatBtn) {
+            DOM.exportChatBtn.addEventListener("click", () => {
+                const chat = appState.conversations[appState.activeChatId];
+                if (!chat || chat.messages.length === 0) return alert("কোনো মেসেজ নেই।");
+                let txt = `=== TBP AI Log ===\nTitle: ${chat.title}\n\n`;
+                chat.messages.forEach(m => txt += `[${m.timestamp}] ${m.role.toUpperCase()}: ${m.content}\n`);
+                const blob = new Blob([txt], { type: "text/plain;charset=utf-8" });
+                const a = document.createElement("a");
+                a.href = URL.createObjectURL(blob);
+                a.download = `chat_log.txt`;
+                a.click();
+            });
+        }
 
         const logoutAction = () => { if (confirm("লগআউট করবেন?")) { localStorage.removeItem(STORAGE_KEYS.USER_SESSION); checkAuthentication(); } };
-        DOM.logoutBtn.addEventListener("click", logoutAction);
-        DOM.panelLogoutBtn.addEventListener("click", logoutAction);
+        if(DOM.logoutBtn) DOM.logoutBtn.addEventListener("click", logoutAction);
+        if(DOM.panelLogoutBtn) DOM.panelLogoutBtn.addEventListener("click", logoutAction);
 
-        DOM.attachBtn.addEventListener("click", () => DOM.hiddenFileInput.click());
-        DOM.cameraBtn.addEventListener("click", () => DOM.hiddenCameraInput.click());
-        DOM.hiddenFileInput.addEventListener("change", (e) => handleSelectedFiles(e.target.files));
-        DOM.hiddenCameraInput.addEventListener("change", (e) => handleSelectedFiles(e.target.files));
+        if(DOM.attachBtn) DOM.attachBtn.addEventListener("click", () => DOM.hiddenFileInput.click());
+        if(DOM.cameraBtn) DOM.cameraBtn.addEventListener("click", () => DOM.hiddenCameraInput.click());
+        if(DOM.hiddenFileInput) DOM.hiddenFileInput.addEventListener("change", (e) => handleSelectedFiles(e.target.files));
+        if(DOM.hiddenCameraInput) DOM.hiddenCameraInput.addEventListener("change", (e) => handleSelectedFiles(e.target.files));
 
         DOM.galleryThumbs.forEach(t => t.addEventListener("click", (e) => {
             appState.activeWallpaper = e.target.dataset.wall;
@@ -550,36 +570,42 @@
             applyVisualThemes();
         }));
 
-        DOM.customWallpaperInput.addEventListener("change", (e) => {
-            if (e.target.files.length > 0) {
-                const r = new FileReader();
-                r.onload = (evt) => { appState.activeWallpaper = evt.target.result; localStorage.setItem(STORAGE_KEYS.WALLPAPER, appState.activeWallpaper); applyVisualThemes(); };
-                r.readAsDataURL(e.target.files[0]);
-            }
-        });
+        if(DOM.customWallpaperInput) {
+            DOM.customWallpaperInput.addEventListener("change", (e) => {
+                if (e.target.files.length > 0) {
+                    const r = new FileReader();
+                    r.onload = (evt) => { appState.activeWallpaper = evt.target.result; localStorage.setItem(STORAGE_KEYS.WALLPAPER, appState.activeWallpaper); applyVisualThemes(); };
+                    r.readAsDataURL(e.target.files[0]);
+                }
+            });
+        }
 
-        DOM.changeAvatarBtn.addEventListener("click", () => DOM.profileAvatarInput.click());
-        DOM.profileAvatarInput.addEventListener("change", (e) => {
-            if (e.target.files.length > 0) {
-                const r = new FileReader();
-                r.onload = (evt) => { appState.userAvatar = evt.target.result; syncAvatarUI(); };
-                r.readAsDataURL(e.target.files[0]);
-            }
-        });
+        if(DOM.changeAvatarBtn) DOM.changeAvatarBtn.addEventListener("click", () => DOM.profileAvatarInput.click());
+        if(DOM.profileAvatarInput) {
+            DOM.profileAvatarInput.addEventListener("change", (e) => {
+                if (e.target.files.length > 0) {
+                    const r = new FileReader();
+                    r.onload = (evt) => { appState.userAvatar = evt.target.result; syncAvatarUI(); };
+                    r.readAsDataURL(e.target.files[0]);
+                }
+            });
+        }
 
-        DOM.saveProfileBtn.addEventListener("click", () => {
-            const n = DOM.editProfileName.value.trim();
-            if (n) {
-                appState.currentUser = n;
-                localStorage.setItem(STORAGE_KEYS.USER_SESSION, n);
-                localStorage.setItem(STORAGE_KEYS.PROFILE_AVATAR, appState.userAvatar);
-                alert("প্রোফাইল আপডেটেড!");
-                DOM.profilePanel.style.display = "none";
-                loadActiveChatUI();
-            }
-        });
+        if(DOM.saveProfileBtn) {
+            DOM.saveProfileBtn.addEventListener("click", () => {
+                const n = DOM.editProfileName.value.trim();
+                if (n) {
+                    appState.currentUser = n;
+                    localStorage.setItem(STORAGE_KEYS.USER_SESSION, n);
+                    localStorage.setItem(STORAGE_KEYS.PROFILE_AVATAR, appState.userAvatar);
+                    alert("প্রোফাইল আপডেটেড!");
+                    DOM.profilePanel.style.display = "none";
+                    loadActiveChatUI();
+                }
+            });
+        }
 
-        if (voiceRecognitionInstance) {
+        if (voiceRecognitionInstance && DOM.voiceBtn) {
             DOM.voiceBtn.addEventListener("click", () => { DOM.voiceBtn.classList.add("active-state"); voiceRecognitionInstance.start(); });
             voiceRecognitionInstance.onresult = (e) => { DOM.userInput.value += e.results[0][0].transcript; autoResizeTextArea(); };
             voiceRecognitionInstance.onend = () => DOM.voiceBtn.classList.remove("active-state");
@@ -587,10 +613,13 @@
     }
 
     function setupPanelToggle(trigger, panel, closeBtn) {
+        if(!trigger || !panel || !closeBtn) return;
         trigger.addEventListener("click", (e) => {
             e.stopPropagation();
             const show = panel.style.display === "block";
-            DOM.wallpaperPanel.style.display = "none"; DOM.settingsPanel.style.display = "none"; DOM.profilePanel.style.display = "none";
+            if(DOM.wallpaperPanel) DOM.wallpaperPanel.style.display = "none"; 
+            if(DOM.settingsPanel) DOM.settingsPanel.style.display = "none"; 
+            if(DOM.profilePanel) DOM.profilePanel.style.display = "none";
             panel.style.display = show ? "none" : "block";
         });
         closeBtn.addEventListener("click", () => panel.style.display = "none");
@@ -615,15 +644,28 @@
         DOM.userInput.value = ""; appState.uploadedFiles = []; renderAttachmentPills(); autoResizeTextArea();
         localStorage.setItem(STORAGE_KEYS.CHAT_HISTORY, JSON.stringify(appState.conversations));
         dispatchAIReplySequence();
+       function toggleThemeMode() { 
+        appState.isDarkMode = !appState.isDarkMode; 
+        localStorage.setItem(STORAGE_KEYS.THEME, appState.isDarkMode); 
+        applyVisualThemes(); 
     }
 
-    function toggleThemeMode() { appState.isDarkMode = !appState.isDarkMode; localStorage.setItem(STORAGE_KEYS.THEME, appState.isDarkMode); applyVisualThemes(); }
-    function autoResizeTextArea() { DOM.userInput.style.height = "auto"; DOM.userInput.style.height = DOM.userInput.scrollHeight + "px"; }
-    function escapeHTML(str) { return str.replace(/[&<>'"]/g, t => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[t] || t)); }
+    function autoResizeTextArea() { 
+        if(DOM.userInput) { 
+            DOM.userInput.style.height = "auto"; 
+            DOM.userInput.style.height = DOM.userInput.scrollHeight + "px"; 
+        } 
+    }
 
-    window.addEventListener("resize", () => { DOM.mobileMenuBtn.style.display = window.innerWidth > 768 ? "none" : "block"; if (window.innerWidth > 768) DOM.sidebarPanel.classList.remove("mobile-open"); });
-    if (window.innerWidth <= 768) DOM.mobileMenuBtn.style.display = "block";
+    function escapeHTML(str) { 
+        return str.replace(/[&<>'"]/g, t => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[t] || t)); 
+    }
+           window.addEventListener("resize", () => { 
+        if(DOM.mobileMenuBtn) DOM.mobileMenuBtn.style.display = window.innerWidth > 768 ? "none" : "block"; 
+        if (window.innerWidth > 768 && DOM.sidebarPanel) DOM.sidebarPanel.classList.remove("mobile-open"); 
+    });
+
+    if (window.innerWidth <= 768 && DOM.mobileMenuBtn) DOM.mobileMenuBtn.style.display = "block";
 
     document.addEventListener("DOMContentLoaded", initApp);
 })();
-               
