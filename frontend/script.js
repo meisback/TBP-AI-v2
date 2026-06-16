@@ -214,14 +214,8 @@ addMessage(text,"user");
 function formatMessage(text){
 
     return text
-
-        // Bold **text**
         .replace(/\*\*(.*?)\*\*/g,"<b>$1</b>")
-
-        // Italic *text*
         .replace(/\*(.*?)\*/g,"<i>$1</i>")
-
-        // Line breaks
         .replace(/\n/g,"<br>");
 
 }
