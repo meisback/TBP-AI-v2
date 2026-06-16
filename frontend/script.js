@@ -1,57 +1,69 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // DOM Elements - Login
+    // === ১. লগইন স্ক্রিনের এলিমেন্টসমূহ ===
     const loginScreen = document.getElementById("loginScreen");
     const usernameInput = document.getElementById("username");
     const loginBtn = document.getElementById("loginBtn");
     const profileName = document.getElementById("profileName");
 
-    // DOM Elements - Main Chat
+    // === ২. চ্যাট বক্স এবং ইনপুট এরিয়া ===
     const chatBox = document.getElementById("chatBox");
     const userInput = document.getElementById("userInput");
     const sendBtn = document.getElementById("sendBtn");
+    const stopGenerationBtn = document.getElementById("stopGenerationBtn");
     const typingIndicator = document.getElementById("typing");
 
-    // DOM Elements - Modals & Buttons
+    // === ৩. মডাল প্যানেলসমূহ ===
     const wallpaperPanel = document.getElementById("wallpaperPanel");
     const settingsPanel = document.getElementById("settingsPanel");
     const profilePanel = document.getElementById("profilePanel");
 
+    // === ৪. হেডারের টপ অ্যাকশন বাটনসমূহ ===
+    const newChatBtn = document.getElementById("newChatBtn");
+    const themeBtn = document.getElementById("themeBtn");
     const wallpaperBtn = document.getElementById("wallpaperBtn");
     const settingsBtn = document.getElementById("settingsBtn");
     const profileBtn = document.getElementById("profileBtn");
-    const openWallpaperBtn = document.getElementById("openWallpaperBtn");
-    const themeBtn = document.getElementById("themeBtn");
     const logoutBtn = document.getElementById("logoutBtn");
-    const newChatBtn = document.getElementById("newChatBtn");
+    const openWallpaperBtn = document.getElementById("openWallpaperBtn");
     const clearChatBtn = document.getElementById("clearChatBtn");
 
+    // === ৫. মডাল বন্ধ করার বাটনসমূহ ===
     const closeWallpaper = document.getElementById("closeWallpaper");
     const closeSettings = document.getElementById("closeSettings");
     const closeProfile = document.getElementById("closeProfile");
 
-    // File Inputs
+    // === ৬. ফাইল আপলোড এবং প্রিভিউ এরিয়া ===
     const attachBtn = document.getElementById("attachBtn");
+    const cameraBtn = document.getElementById("cameraBtn");
+    const voiceBtn = document.getElementById("voiceBtn");
     const hiddenFileInput = document.getElementById("hiddenFileInput");
+    const hiddenCameraInput = document.getElementById("hiddenCameraInput");
+    const attachmentPreviewBar = document.getElementById("attachmentPreviewBar");
 
-    // --- 1. Login System ---
-    loginBtn.addEventListener("click", loginUser);
-    usernameInput.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") loginUser();
-    });
+    // === অ্যাপের ইন্টারনাল স্টেট (Variables) ===
+    let selectedFiles = [];
+    let isGenerating = false;
+    let generationTimeout = null;
+    let isVoiceActive = false;
+        // লগইন বাটন ক্লিক হ্যান্ডলার
+    if (loginBtn) {
+        loginBtn.addEventListener("click", loginUser);
+        usernameInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") loginUser();
+        });
+    }
 
     function loginUser() {
         const username = usernameInput.value.trim();
         if (username !== "") {
-            profileName.innerText = username;
-            loginScreen.style.display = "none";
-            // ওয়েলকাম মেসেজ পাঠানো
-            appendMessage("bot", `হ্যালো ${username}! আমি TBP AI। আজ আপনাকে কীভাবে সাহায্য করতে পারি?`);
+            if (profileName) profileName.innerText = username;
+            // লগইন স্ক্রিন হাইড করা
+            loginScreen.style.setProperty("display", "none", "important");
         } else {
-            alert("অনুগ্রহ করে আপনার নাম লিখুন!");
+            alert("অনুগ্রহ করে আপনার নাম লিখে Continue চাপুন!");
         }
     }
-
-    // --- 2. Message Exchange System ---
+        // মেসেজ সেন্ড করার ইভেন্ট
     sendBtn.addEventListener("click", handleSendMessage);
     userInput.addEventListener("keydown", (e) => {
         if (e.key === "Enter" && !e.shiftKey) {
@@ -61,176 +73,279 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     function handleSendMessage() {
+        if (isGenerating) return;
         const text = userInput.value.trim();
-        if (text === "") return;
+        
+        if (text === "" && selectedFiles.length === 0) return;
 
-        // ইউজারের মেসেজ চ্যাটে দেখানো
-        appendMessage("user", text);
+        // স্ক্রিনে মেসেজ দেখানো
+        appendMessage("user", text, selectedFiles);
+        
+        // ইনপুট রিসেট
         userInput.value = "";
-        userInput.style.height = "auto"; // Textarea রিসেট
+        userInput.style.height = "auto";
+        selectedFiles = [];
+        renderAttachmentPreview();
 
-        // বট টাইপিং অ্যানিমেশন চালু
-        showTyping(true);
+        // জেনারেশন বা থিংকিং মোড অন
+        setGenerationState(true);
 
-        // ১.৫ সেকেন্ড পর বটের ডাইনামিক রিপ্লাই জেনারেট করা
-        setTimeout(() => {
-            showTyping(false);
+        // ১.৮ সেকেন্ড পর বটের রেসপন্স
+        generationTimeout = setTimeout(() => {
+            setGenerationState(false);
             const botResponse = getBotReply(text);
             appendMessage("bot", botResponse);
-        }, 1500);
+        }, 1800);
     }
 
-    // মেসেজ স্ক্রিনে যুক্ত করার ফাংশন
-    function appendMessage(sender, text) {
-        const messageDiv = document.createElement("div");
-        messageDiv.classList.add("message", sender);
+    function setGenerationState(generating) {
+        isGenerating = generating;
+        if (generating) {
+            typingIndicator.style.display = "flex";
+            sendBtn.style.display = "none";
+            stopGenerationBtn.style.display = "flex";
+        } else {
+            typingIndicator.style.display = "none";
+            sendBtn.style.display = "flex";
+            stopGenerationBtn.style.display = "none";
+        }
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
 
+    // জেনারেশন স্টপ করার বাটন লজিক
+    stopGenerationBtn.addEventListener("click", () => {
+        clearTimeout(generationTimeout);
+        setGenerationState(false);
+        appendMessage("bot", "⚠️ Generation stopped by user.");
+    });
+
+    // চ্যাট বক্সে মেসেজ যোগ করার মেইন ফাংশন
+    function appendMessage(sender, text, files = []) {
+        const messageRow = document.createElement("div");
+        messageRow.classList.add("message", sender);
+        const avatarIcon = sender === "user" ? "👤" : "🤖";
         const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-        if (sender === "user") {
-            messageDiv.innerHTML = `
-                <div class="bubble">${text}</div>
-                <div class="avatar">👤</div>
-            `;
+        // ফাইল বা ছবি থাকলে তা বাবলে যুক্ত করা
+        let mediaHtml = "";
+        if (files.length > 0) {
+            mediaHtml += `<div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap;">`;
+            files.forEach(file => {
+                if (file.type.startsWith("image/")) {
+                    mediaHtml += `<div class="preview-pill"><img src="${URL.createObjectURL(file)}"></div>`;
+                } else {
+                    mediaHtml += `<div class="preview-pill"><div class="doc-icon">📄</div></div>`;
+                }
+            });
+            mediaHtml += `</div>`;
+        }
+
+        // কোড ব্লক ফরম্যাটিং চেক করা
+        let processedText = text;
+        if (sender === "bot" && text.includes("```")) {
+            processedText = formatCodeBlocks(text);
         } else {
-            messageDiv.innerHTML = `
-                <div class="avatar">🤖</div>
+            processedText = text.replace(/\n/g, "<br>");
+        }
+
+        if (sender === "user") {
+            messageRow.innerHTML = `<div class="bubble">${mediaHtml}<div>${processedText}</div></div><div class="avatar">${avatarIcon}</div>`;
+        } else {
+            messageRow.innerHTML = `
+                <div class="avatar">${avatarIcon}</div>
                 <div class="bubble">
-                    ${text}
+                    <div>${processedText}</div>
                     <div class="message-info">
                         <span>${currentTime}</span>
                         <button class="copy-btn" title="Copy Message">📋</button>
                     </div>
-                </div>
-            `;
+                </div>`;
 
-            // কপি বাটন সচল করা
-            const copyBtn = messageDiv.querySelector(".copy-btn");
-            copyBtn.addEventListener("click", () => {
-                // '📋' আইকন এবং টাইমস্ট্যাম্প বাদ দিয়ে শুধু টেক্সট কপি করার জন্য split করা
-                const cleanText = text.replace(/<[^>]*>/g, ''); // HTML tags রিমুভ করার জন্য
-                navigator.clipboard.writeText(cleanText).then(() => {
-                    copyBtn.innerText = "✅";
-                    setTimeout(() => copyBtn.innerText = "📋", 1500);
+            // মেসেজ টেক্সট কপি বাটন
+            const copyBtn = messageRow.querySelector(".copy-btn");
+            if (copyBtn) {
+                copyBtn.addEventListener("click", () => {
+                    navigator.clipboard.writeText(text.replace(/```/g, "")).then(() => {
+                        copyBtn.innerText = "✅";
+                        setTimeout(() => copyBtn.innerText = "📋", 1500);
+                    });
+                });
+            }
+
+            // কোড ব্লকের ভেতরের কোড কপি বাটন
+            const copyCodeButtons = messageRow.querySelectorAll(".copy-code-btn");
+            copyCodeButtons.forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const codeText = btn.parentElement.nextElementSibling.querySelector("code").innerText;
+                    navigator.clipboard.writeText(codeText).then(() => {
+                        btn.innerText = "Copied!";
+                        setTimeout(() => btn.innerText = "Copy", 1500);
+                    });
                 });
             });
         }
 
-        chatBox.appendChild(messageDiv);
-        chatBox.scrollTop = chatBox.scrollHeight; // অটো স্ক্রোল ডাউন
-    }
-
-    function showTyping(isTyping) {
-        typingIndicator.style.display = isTyping ? "flex" : "none";
+        chatBox.appendChild(messageRow);
         chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    // --- 3. Dummy AI Logic (বটের উত্তরের লজিক) ---
+    // ব্যাকটিক (```) ডিটেক্ট করে কোড উইন্ডো বানানোর ফাংশন
+    function formatCodeBlocks(text) {
+        const parts = text.split("```");
+        for (let i = 1; i < parts.length; i += 2) {
+            const rawCode = parts[i];
+            const firstNewLine = rawCode.indexOf("\n");
+            let lang = rawCode.substring(0, firstNewLine).trim() || "code";
+            let code = rawCode.substring(firstNewLine + 1);
+
+            parts[i] = `
+                <div class="code-block-container">
+                    <div class="code-block-header"><span>${lang}</span><button class="copy-code-btn">Copy</button></div>
+                    <pre><code>${code.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code></pre>
+                </div>`;
+        }
+        return parts.join("");
+    }
+
+    // বটের ডামি রিপ্লাই ডেটাবেজ
     function getBotReply(msg) {
         const lowMsg = msg.toLowerCase();
         if (lowMsg.includes("hi") || lowMsg.includes("hello") || lowMsg.includes("হ্যালো")) {
-            return "হ্যালো! কেমন আছেন? আমি আপনাকে কীভাবে সাহায্য করতে পারি?";
-        } else if (lowMsg.includes("কেমন আছ") || lowMsg.includes("kemon acho")) {
-            return "আমি ভালো আছি! আপনি কেমন আছেন? আপনার কোনো সাহায্য লাগবে?";
-        } else if (lowMsg.includes("তোমার নাম কি") || lowMsg.includes("name")) {
-            return "আমার নাম TBP AI v3.1 Pro। আমি আপনার ব্যক্তিগত এআই অ্যাসিস্ট্যান্ট।";
-        } else if (lowMsg.includes("ধন্যবাদ") || lowMsg.includes("thank")) {
-            return "আপনাকেও অনেক ধন্যবাদ! আপনার সাথে কথা বলে ভালো লাগলো।";
+            return "হ্যালো! TBP AI v3.1 এ আপনাকে স্বাগতম। আজ আপনাকে কীভাবে সাহায্য করতে পারি?";
+        } else if (lowMsg.includes("code") || lowMsg.includes("কোড") || lowMsg.includes("html")) {
+            return "এখানে আপনার অনুরোধের একটি নমুনা কোড দেওয়া হলো:\n```html\n<!DOCTYPE html>\n<html>\n<head>\n    <title>TBP AI Demo</title>\n</head>\n<body>\n    <h1>Hello World</h1>\n</body>\n</html>\n```";
+        } else if (lowMsg.includes("তোমার নাম") || lowMsg.includes("your name")) {
+            return "আমি **TBP AI v3.1 Stable**, আপনার একটি অ্যাডভান্সড এআই অ্যাসিস্ট্যান্ট।";
+        } else if (lowMsg.includes("কেমন আছ")) {
+            return "আমি চমৎকার আছি! আশা করি আপনিও ভালো আছেন।";
         } else {
-            return `আপনি বলেছেন: "${msg}"। এটি একটি চমৎকার প্রশ্ন! তবে এই বিষয়ে বিস্তারিত জানতে আমার মূল সার্ভার কানেকশন প্রয়োজন।`;
+            return `আপনার দেওয়া বার্তাটি পেলাম: "${msg}"\n\nএটি একটি দারুণ টপিক! এই বিষয়ে আরও গভীর তথ্যের জন্য আমার মূল ক্লাউড API সার্ভার সক্রিয় করুন।`;
         }
     }
+    // ফাইল এবং ক্যামেরা সিলেক্ট ট্রিগার
+    attachBtn.addEventListener("click", () => hiddenFileInput.click());
+    if (cameraBtn) {
+        cameraBtn.addEventListener("click", () => hiddenCameraInput.click());
+    }
 
-    // --- 4. Modals Control (Open & Close) ---
-    // Open Modals
-    wallpaperBtn.addEventListener("click", () => wallpaperPanel.style.display = "flex");
-    settingsBtn.addEventListener("click", () => settingsPanel.style.display = "flex");
-    profileBtn.addEventListener("click", () => profilePanel.style.display = "flex");
+    hiddenFileInput.addEventListener("change", handleFileSelection);
+    if (hiddenCameraInput) {
+        hiddenCameraInput.addEventListener("change", handleFileSelection);
+    }
+
+    function handleFileSelection(e) {
+        const files = Array.from(e.target.files);
+        files.forEach(file => selectedFiles.push(file));
+        renderAttachmentPreview();
+    }
+
+    // ইনপুট বক্সের ওপর প্রিভিউ বার রেন্ডার করা
+    function renderAttachmentPreview() {
+        if (selectedFiles.length === 0) {
+            attachmentPreviewBar.style.display = "none";
+            attachmentPreviewBar.innerHTML = "";
+            return;
+        }
+
+        attachmentPreviewBar.style.display = "flex";
+        attachmentPreviewBar.innerHTML = "";
+
+        selectedFiles.forEach((file, index) => {
+            const pill = document.createElement("div");
+            pill.classList.add("preview-pill");
+
+            if (file.type.startsWith("image/")) {
+                pill.innerHTML = `<img src="${URL.createObjectURL(file)}"><div class="preview-pill-remove" data-index="${index}">✕</div>`;
+            } else {
+                pill.innerHTML = `<div class="doc-icon">📄</div><div class="preview-pill-remove" data-index="${index}">✕</div>`;
+            }
+
+            // ফাইল রিমুভ করার ক্রস বাটন লজিক
+            pill.querySelector(".preview-pill-remove").addEventListener("click", (e) => {
+                const idx = parseInt(e.target.getAttribute("data-index"));
+                selectedFiles.splice(idx, 1);
+                renderAttachmentPreview();
+            });
+
+            attachmentPreviewBar.appendChild(pill);
+        });
+    }
+
+    // ভয়েস বাটন টগল এবং পালস অ্যানিমেশন
+    voiceBtn.addEventListener("click", () => {
+        isVoiceActive = !isVoiceActive;
+        if (isVoiceActive) {
+            voiceBtn.classList.add("active-state");
+            userInput.placeholder = "Listening...";
+        } else {
+            voiceBtn.classList.remove("active-state");
+            userInput.placeholder = "Message TBP AI...";
+        }
+    });
+        // মডাল ওপেন করার ফাংশন
+    const showPanel = (panel) => panel.style.display = "block";
+    const hidePanel = (panel) => panel.style.display = "none";
+
+    wallpaperBtn.addEventListener("click", () => showPanel(wallpaperPanel));
+    settingsBtn.addEventListener("click", () => showPanel(settingsPanel));
+    profileBtn.addEventListener("click", () => showPanel(profilePanel));
+    
     openWallpaperBtn.addEventListener("click", () => {
-        settingsPanel.style.display = "none";
-        wallpaperPanel.style.display = "flex";
+        hidePanel(settingsPanel);
+        showPanel(wallpaperPanel);
     });
 
-    // Close Modals
-    closeWallpaper.addEventListener("click", () => wallpaperPanel.style.display = "none");
-    closeSettings.addEventListener("click", () => settingsPanel.style.display = "none");
-    closeProfile.addEventListener("click", () => profilePanel.style.display = "none");
+    // মডাল ক্লোজ করা
+    closeWallpaper.addEventListener("click", () => hidePanel(wallpaperPanel));
+    closeSettings.addEventListener("click", () => hidePanel(settingsPanel));
+    closeProfile.addEventListener("click", () => hidePanel(profilePanel));
 
-    // উইন্ডোর বাইরে ক্লিক করলে মডাল বন্ধ হওয়া
+    // মডালের বাইরে ক্লিক করলে বন্ধ হওয়া
     window.addEventListener("click", (e) => {
-        if (e.target === wallpaperPanel) wallpaperPanel.style.display = "none";
-        if (e.target === settingsPanel) settingsPanel.style.display = "none";
-        if (e.target === profilePanel) profilePanel.style.display = "none";
+        if (e.target.classList.contains("panel")) hidePanel(e.target);
     });
 
-    // --- 5. Wallpaper Changer ---
+    // লাইভ ওয়ালপেপার চেঞ্জার
     const wallpapers = document.querySelectorAll(".wallpaper");
     wallpapers.forEach(wall => {
         wall.addEventListener("click", () => {
             const wallUrl = wall.getAttribute("data-wall");
             document.body.style.backgroundImage = `linear-gradient(rgba(5,10,20,.82),rgba(5,10,20,.82)), url('${wallUrl}')`;
-            wallpaperPanel.style.display = "none";
+            hidePanel(wallpaperPanel);
         });
     });
 
-    // --- 6. Top Actions Buttons ---
-    // Theme Switcher (Dark/Light mode toggler)
+    // ডার্ক এবং লাইট থিম সুইচ
     let isDarkMode = true;
     themeBtn.addEventListener("click", () => {
         isDarkMode = !isDarkMode;
-        if (!isDarkMode) {
-            document.documentElement.style.setProperty('--bg', '#f0f2f5');
-            document.documentElement.style.setProperty('--card', 'rgba(255, 255, 255, 0.9)');
-            document.documentElement.style.setProperty('--bubble', '#e4e6eb');
-            document.documentElement.style.setProperty('--text', '#000000');
-            document.documentElement.style.setProperty('--muted', '#65676b');
-            themeBtn.innerText = "☀️";
-        } else {
-            document.documentElement.style.setProperty('--bg', '#0b1220');
-            document.documentElement.style.setProperty('--card', 'rgba(17, 24, 39, .82)');
-            document.documentElement.style.setProperty('--bubble', '#1e293b');
-            document.documentElement.style.setProperty('--text', '#ffffff');
-            document.documentElement.style.setProperty('--muted', '#9ca3af');
-            themeBtn.innerText = "🌙";
-        }
+        themeBtn.innerText = isDarkMode ? "🌙" : "☀️";
+        document.documentElement.style.setProperty('--bg', isDarkMode ? '#0b1220' : '#f3f4f6');
+        document.documentElement.style.setProperty('--card', isDarkMode ? 'rgba(17,24,39,.88)' : 'rgba(255,255,255,.90)');
+        document.documentElement.style.setProperty('--text', isDarkMode ? '#ffffff' : '#111827');
+        document.documentElement.style.setProperty('--muted', isDarkMode ? '#9ca3af' : '#4b5563');
     });
 
-    // New Chat & Clear Chat
-    const resetChat = () => {
-        chatBox.innerHTML = `
-            <div class="message bot">
-                <div class="avatar">🤖</div>
-                <div class="bubble">👋 নতুন চ্যাট সেশন শুরু হয়েছে। আমি আপনাকে কীভাবে সাহায্য করতে পারি?</div>
-            </div>
-        `;
-        settingsPanel.style.display = "none";
+    // চ্যাট ক্লিয়ার ও নিউ চ্যাট ফাংশন
+    const triggerClear = () => {
+        chatBox.innerHTML = `<div class="message bot"><div class="avatar">🤖</div><div class="bubble">All chats cleared. New session started!</div></div>`;
+        hidePanel(settingsPanel);
     };
-    newChatBtn.addEventListener("click", resetChat);
-    clearChatBtn.addEventListener("click", resetChat);
+    newChatBtn.addEventListener("click", triggerClear);
+    clearChatBtn.addEventListener("click", triggerClear);
 
-    // Logout
+    // লগআউট হ্যান্ডলার
     logoutBtn.addEventListener("click", () => {
-        if (confirm("আপনি কি নিশ্চিতভাবে লগআউট করতে চান?")) {
+        if (confirm("Are you sure you want to logout?")) {
             loginScreen.style.display = "flex";
             usernameInput.value = "";
-            chatBox.innerHTML = ""; // চ্যাট হিস্ট্রি ক্লিয়ার
+            triggerClear();
         }
     });
 
-    // --- 7. Attach File Trigger ---
-    attachBtn.addEventListener("click", () => {
-        hiddenFileInput.click();
-    });
-    hiddenFileInput.addEventListener("change", () => {
-        if (hiddenFileInput.files.length > 0) {
-            alert(`${hiddenFileInput.files.length}টি ফাইল আপলোড এর জন্য সিলেক্ট করা হয়েছে!`);
-        }
-    });
-
-    // Textarea Auto-Resize (লেখা বড় হলে ইনপুট বক্স বড় হবে)
-    userInput.addEventListener("input", function () {
+    // টেক্সট এরিয়া অটো-রিসাইজ (লেখা বড় হলে ইনপুট বক্স বড় হবে)
+    userInput.addEventListener("input", function() {
         this.style.height = "auto";
         this.style.height = (this.scrollHeight) + "px";
     });
 });
-              
