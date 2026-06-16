@@ -261,163 +261,159 @@ style="display:none;">
 
 <!-- JavaScript -->
 
-<script src="script.js"></script>
-
-</body>
-    <!-- =====================================
-     HTML v3.1 Part 1
-     Login + Sidebar + Header
+=====================================
+     HTML v3.1 Part 2
+     Chat Area + Attachment + Input
 ===================================== -->
 
-<!-- Login Screen -->
-<div id="loginScreen" class="login-screen">
+<!-- Chat Area -->
+<main id="chatBox" class="chat-box">
 
-    <div class="login-card">
+    <div class="message-row ai-row">
 
-        <div class="login-logo">🤖</div>
+        <div class="avatar">🤖</div>
 
-        <h1>TBP AI v3.1</h1>
+        <div class="message-content-wrap">
 
-        <p>আপনার নাম লিখে Continue করুন</p>
+            <div class="message-bubble">
 
-        <input
-            type="text"
-            id="username"
-            placeholder="আপনার নাম লিখুন..."
-            autocomplete="off"
-        >
+                👋 <b>স্বাগতম!</b><br><br>
 
-        <button id="loginBtn">
-            Continue
-        </button>
+                আমি <b>TBP AI v3.1 Professional</b>।
+
+                <br><br>
+
+                • বাংলা, English ও Hinglish বুঝতে পারি।<br>
+                • ছবি ও ফাইল গ্রহণ করতে পারি।<br>
+                • Markdown ও Code Block সাপোর্ট করি।
+
+            </div>
+
+            <div class="message-meta">
+
+                <span class="timestamp">System</span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+<!-- Typing Indicator -->
+<div
+    id="typing"
+    class="typing"
+    style="display:none;"
+>
+
+    <div class="typing-bubble">
+
+        <span></span>
+        <span></span>
+        <span></span>
 
     </div>
 
 </div>
 
-<!-- Main App -->
-<div class="app">
+<!-- Attachment Preview -->
+<div
+    id="attachmentPreviewBar"
+    class="attachment-preview-bar"
+    style="display:none;"
+>
 
-    <!-- Sidebar -->
-    <aside id="sidebarPanel" class="sidebar">
+</div>
 
-        <div class="sidebar-top">
+<!-- Hidden File Inputs -->
 
-            <button id="sidebarNewChatBtn" class="sidebar-btn">
-                ➕ New Chat
-            </button>
+<input
+    type="file"
+    id="hiddenFileInput"
+    multiple
+    hidden
+>
 
-            <input
-                type="text"
-                id="searchChatInput"
-                placeholder="Search chat..."
-            >
+<input
+    type="file"
+    id="hiddenCameraInput"
+    accept="image/*"
+    capture="environment"
+    hidden
+>
 
-        </div>
+<!-- Premium Input Area -->
 
-        <div
-            id="chatHistoryZone"
-            class="chat-history"
-        >
+<footer class="input-area">
 
-        </div>
+    <button
+        id="attachBtn"
+        class="icon-btn"
+        title="Attach"
+    >
+        📎
+    </button>
 
-        <div class="sidebar-bottom">
+    <textarea
 
-            <button
-                id="exportChatBtn"
-                class="sidebar-btn"
-            >
-                📤 Export Chat
-            </button>
+        id="userInput"
 
-        </div>
+        rows="1"
 
-    </aside>
+        placeholder="Message TBP AI..."
 
-    <!-- Main Content -->
-    <div class="main-container">
+        autocomplete="off"
 
-        <!-- Header -->
-        <header>
+    ></textarea>
 
-            <div class="header-left">
+    <button
 
-                <button
-                    id="mobileMenuBtn"
-                    class="top-btn"
-                >
-                    ☰
-                </button>
+        id="voiceBtn"
 
-                <div class="ai-logo">
-                    🤖
-                </div>
+        class="icon-btn"
 
-                <div class="header-title">
+        title="Voice"
 
-                    <h2>TBP AI v3.1</h2>
+    >
+        🎤
+    </button>
 
-                    <span>
-                        Professional AI Assistant
-                    </span>
+    <button
 
-                </div>
+        id="stopGenerationBtn"
 
-            </div>
+        class="icon-btn"
 
-            <div class="header-right">
+        title="Stop"
 
-                <button
-                    id="newChatBtn"
-                    class="top-btn"
-                    title="New Chat"
-                >
-                    ➕
+        style="display:none;"
 
-                </button>
+    >
+        ⏹️
+    </button>
 
-                <button
-                    id="themeBtn"
-                    class="top-btn"
-                    title="Theme"
-                >
-                    🌙
-                </button>
+    <button
 
-                <button
-                    id="wallpaperBtn"
-                    class="top-btn"
-                    title="Wallpaper"
-                >
-                    🖼️
-                </button>
+        id="sendBtn"
 
-                <button
-                    id="settingsBtn"
-                    class="top-btn"
-                    title="Settings"
-                >
-                    ⚙️
-                </button>
+        class="send-btn"
 
-                <button
-                    id="profileBtn"
-                    class="top-btn"
-                    title="Profile"
-                >
-                    👤
-                </button>
+        title="Send"
 
-                <button
-                    id="logoutBtn"
-                    class="top-btn"
-                    title="Logout"
-                >
-                    🚪
-                </button>
+    >
+        ➤
+    </button>
 
-            </div>
+</footer>
 
-        </header>
+</div>
+<!-- End main-container -->
+
+</div>
+<!-- End app -->
+    <script src="script.js"></script>
+<!-- 
+</body>
 </html>
