@@ -1,186 +1,265 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TBP AI v3.1 Professional</title>
 
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
- 
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<title>TBP AI v3.1</title>
+
+<link rel="stylesheet" href="style.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 </head>
- 
+
 <body>
 
+<!-- Login -->
+
 <div id="loginScreen" class="login-screen">
+
     <div class="login-card">
+
         <div class="login-logo">🤖</div>
-        <h1>TBP AI v3.1</h1>
-        <p>Professional AI Workspace</p>
-        <input type="text" id="username" placeholder="Enter your name" autocomplete="off">
-        <button id="loginBtn">Continue</button>
+
+        <h1>TBP AI</h1>
+
+        <p>Professional AI Assistant</p>
+
+        <input
+            type="text"
+            id="username"
+            placeholder="Enter your name">
+
+        <button id="loginBtn">
+            Continue
+        </button>
+
     </div>
+
 </div>
+
+<!-- Main App -->
 
 <div class="app">
 
-    <aside id="sidebarPanel" class="sidebar-panel glass">
-        <div class="sidebar-brand">
-            <span>TBP AI v3.1 Pro</span>
+<header class="header">
+
+<div class="header-left">
+
+<div class="ai-logo">
+🤖
+</div>
+
+<div class="header-title">
+
+<h2>TBP AI v3.1</h2>
+
+<span>Professional AI Assistant</span>
+
+</div>
+
+</div>
+
+<div class="header-right">
+
+<button
+class="top-btn"
+id="newChatBtn">
++
+</button>
+
+<button
+class="top-btn"
+id="themeBtn">
+🌙
+</button>
+
+<button
+class="top-btn"
+id="wallpaperBtn">
+🖼️
+</button>
+
+<button
+class="top-btn"
+id="settingsBtn">
+⚙️
+</button>
+
+<button
+class="top-btn"
+id="profileBtn">
+👤
+</button>
+
+<button
+class="top-btn"
+id="logoutBtn">
+🚪
+</button>
+
+</div>
+
+</header>
+
+<main
+id="chatBox"
+class="chat-box">
+
+</main>
+
+<div
+id="typing"
+class="typing"
+style="display:none;">
+
+<div class="typing-bubble">
+
+<span></span>
+<span></span>
+<span></span>
+
+</div>
+
+</div>
+<!-- Input Area -->
+
+<footer class="input-area">
+
+    <button
+        id="attachBtn"
+        class="icon-btn">
+        📎
+    </button>
+
+    <textarea
+        id="userInput"
+        placeholder="Message TBP AI..."
+        rows="1"></textarea>
+
+    <button
+        id="voiceBtn"
+        class="icon-btn">
+        🎤
+    </button>
+
+    <button
+        id="sendBtn"
+        class="send-btn">
+        ➤
+    </button>
+
+</footer>
+
+</div>
+
+<!-- Wallpaper Modal -->
+
+<div id="wallpaperPanel" class="modal">
+
+    <div class="modal-content">
+
+        <h2>🖼️ Choose Wallpaper</h2>
+
+        <div class="wallpaper-grid">
+
+            <div class="wallpaper" data-wall="wallpapers/wall1.jpg"></div>
+            <div class="wallpaper" data-wall="wallpapers/wall2.jpg"></div>
+            <div class="wallpaper" data-wall="wallpapers/wall3.jpg"></div>
+            <div class="wallpaper" data-wall="wallpapers/wall4.jpg"></div>
+            <div class="wallpaper" data-wall="wallpapers/wall5.jpg"></div>
+            <div class="wallpaper" data-wall="wallpapers/wall6.jpg"></div>
+
         </div>
-        
-        <div class="sidebar-action-box">
-            <button id="sidebarNewChatBtn" class="new-chat-btn">
-                <span>+</span> New Chat
+
+        <br>
+
+        <button
+            id="closeWallpaper"
+            class="close-btn">
+            Close
+        </button>
+
+    </div>
+
+</div>
+
+<!-- Settings Modal -->
+
+<div id="settingsPanel" class="modal">
+
+    <div class="modal-content">
+
+        <h2>⚙️ Settings</h2>
+
+        <div class="setting-item">
+
+            <span>Wallpaper</span>
+
+            <button
+                id="openWallpaperBtn"
+                class="setting-btn">
+                Open
             </button>
+
         </div>
 
-        <div class="search-box-wrap">
-            <input type="text" id="searchChatInput" placeholder="🔍 Search conversations...">
-        </div>
+        <div class="setting-item">
 
-        <div id="chatHistoryZone" class="history-scroll-zone">
-            </div>
+            <span>Clear Chat</span>
 
-        <div class="sidebar-footer">
-            <button id="exportChatBtn" class="new-chat-btn" style="border: 1px solid var(--border); font-size: 13px; justify-content: center;">
-                📥 Export Chat (.TXT)
+            <button
+                id="clearChatBtn"
+                class="setting-btn">
+                Clear
             </button>
-        </div>
-    </aside>
 
-    <div class="main-container">
-        
-        <header class="header">
-            <div class="header-left">
-                <button id="mobileMenuBtn" class="top-btn" style="display: none; margin-right: 8px;">☰</button>
-                <div class="ai-logo">🤖</div>
-                <div class="header-title">
-                    <h2>TBP AI v3.1</h2>
-                    <span>Professional AI Assistant</span>
-                </div>
-            </div>
-
-            <div class="header-right">
-                <button id="newChatBtn" class="top-btn" title="New Chat">+</button>
-                <button id="themeBtn" class="top-btn" title="Toggle Theme">🌙</button>
-                <button id="wallpaperBtn" class="top-btn" title="Wallpapers">🖼️</button>
-                <button id="profileBtn" class="top-btn" title="Profile">👤</button>
-                <button id="settingsBtn" class="top-btn" title="Settings">⚙️</button>
-                <button id="logoutBtn" class="top-btn" title="Logout">🚪</button>
-            </div>
-        </header>
-
-        <main id="chatBox" class="chat-workspace">
-            <div class="message-row ai-row">
-                <div class="avatar">🤖</div>
-                <div class="message-content-wrap">
-                    <div class="message-bubble">
-                        👋 <b>স্বাগতম!</b><br><br>
-                        আমি <b>TBP AI v3.1 Professional</b>। মাল্টিমোডাল ফাইল আপলোড, ভয়েস কমান্ড এবং প্রিমিয়াম রেন্ডারিং ইঞ্জিন সহ আমি প্রস্তুত। আপনার যেকোনো প্রশ্ন বা ফাইল এখানে শেয়ার করতে পারেন।
-                    </div>
-                    <div class="message-meta">
-                        <span class="timestamp">System</span>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <div id="typing" class="message-row ai-row" style="display: none; margin-left: 20px; margin-bottom: 10px;">
-            <div class="avatar">🤖</div>
-            <div class="message-content-wrap">
-                <div class="message-bubble" style="padding: 10px 14px;">
-                    <div class="thinking-bubble-loader">
-                        <div class="thinking-dot"></div>
-                        <div class="thinking-dot"></div>
-                        <div class="thinking-dot"></div>
-                    </div>
-                </div>
-            </div>
         </div>
 
-        <footer class="input-container-deck">
-            <div class="input-panel-wrapper glass">
-                
-                <div id="attachmentPreviewBar" class="attachment-previews-bar" style="display: none;">
-                    </div>
+        <br>
 
-                <div class="input-interactive-row">
-                    <input type="file" id="hiddenFileInput" class="hidden-file-input" accept="image/*,application/pdf" multiple>
-                    <input type="file" id="hiddenCameraInput" class="hidden-file-input" accept="image/*" capture="environment">
-
-                    <button id="attachBtn" class="input-deck-btn" title="Upload Image/PDF">📎</button>
-                    <button id="cameraBtn" class="input-deck-btn" title="Open Camera">📷</button>
-                    
-                    <textarea id="userInput" class="dynamic-textarea" placeholder="Message TBP AI..." rows="1"></textarea>
-                    
-                    <button id="voiceBtn" class="input-deck-btn" title="Voice Input">🎤</button>
-                    <button id="stopGenerationBtn" class="input-deck-btn" title="Stop Generation" style="display: none; color: var(--danger);">🛑</button>
-                    <button id="sendBtn" class="input-deck-btn send-action-btn" title="Send Message">➤</button>
-                </div>
-            </div>
-        </footer>
+        <button
+            id="closeSettings"
+            class="close-btn">
+            Close
+        </button>
 
     </div>
+
+</div>
+<!-- Profile Modal -->
+
+<div id="profilePanel" class="modal">
+
+    <div class="modal-content">
+
+        <div class="profile-avatar">
+            👤
+        </div>
+
+        <h2 id="profileName">
+            Guest
+        </h2>
+
+        <p>
+            Welcome to TBP AI v3.1 Professional
+        </p>
+
+        <button
+            id="closeProfile"
+            class="close-btn">
+            Close
+        </button>
+
+    </div>
+
 </div>
 
-<div id="wallpaperPanel" class="floating-panel-card glass">
-    <div class="panel-header-row">
-        <h3>🖼️ Wallpapers</h3>
-        <button id="closeWallpaper" style="background:transparent; color:#fff; font-size:18px;">✕</button>
-    </div>
-    <div class="settings-group">
-        <label>Custom Upload</label>
-        <input type="file" id="customWallpaperInput" class="settings-control-input" accept="image/*" style="padding:5px;">
-    </div>
-    <label style="font-size: 12px; color: var(--muted); display:block; margin-bottom:8px;">Built-in Gallery</label>
-    <div class="wallpaper-gallery-grid">
-        <img class="gallery-thumb-item" data-wall="wallpapers/wall1.jpg" src="wallpapers/wall1.jpg" onerror="this.style.background='#1f2937'" alt="Wall 1">
-        <img class="gallery-thumb-item" data-wall="wallpapers/wall2.jpg" src="wallpapers/wall2.jpg" onerror="this.style.background='#1f2937'" alt="Wall 2">
-        <img class="gallery-thumb-item" data-wall="wallpapers/wall3.jpg" src="wallpapers/wall3.jpg" onerror="this.style.background='#1f2937'" alt="Wall 3">
-        <img class="gallery-thumb-item" data-wall="wallpapers/wall4.jpg" src="wallpapers/wall4.jpg" onerror="this.style.background='#1f2937'" alt="Wall 4">
-        <img class="gallery-thumb-item" data-wall="wallpapers/wall5.jpg" src="wallpapers/wall5.jpg" onerror="this.style.background='#1f2937'" alt="Wall 5">
-        <img class="gallery-thumb-item" data-wall="wallpapers/wall6.jpg" src="wallpapers/wall6.jpg" onerror="this.style.background='#1f2937'" alt="Wall 6">
-    </div>
-</div>
-
-<div id="settingsPanel" class="floating-panel-card glass">
-    <div class="panel-header-row">
-        <h3>⚙️ Settings</h3>
-        <button id="closeSettings" style="background:transparent; color:#fff; font-size:18px;">✕</button>
-    </div>
-    <div class="settings-group">
-        <label>Application Theme</label>
-        <button id="themeSwitchBtn" class="settings-control-input" style="text-align:left; background: rgba(255,255,255,0.05);">🔄 Toggle Dark / Light Mode</button>
-    </div>
-    <div class="settings-group">
-        <label>System Maintenance</label>
-        <button id="clearChatBtn" class="settings-control-input" style="text-align:left; color: var(--danger); background: rgba(255,255,255,0.05);">🗑️ Clear Current Conversations</button>
-    </div>
-</div>
-
-<div id="profilePanel" class="floating-panel-card glass" style="text-align: center;">
-    <div class="panel-header-row" style="text-align: left;">
-        <h3>👤 User Profile</h3>
-        <button id="closeProfile" style="background:transparent; color:#fff; font-size:18px;">✕</button>
-    </div>
-    <div style="position:relative; width:80px; height:80px; margin:0 auto 14px auto;">
-        <div id="profileAvatarDisplay" class="avatar" style="width:80px; height:80px; font-size:32px; background:var(--secondary);">👤</div>
-        <input type="file" id="profileAvatarInput" class="hidden-file-input" accept="image/*">
-        <button id="changeAvatarBtn" style="position:absolute; bottom:0; right:0; background:var(--primary); width:26px; height:26px; border-radius:50%; color:#fff; font-size:12px; display:flex; align-items:center; justify-content:center;">✏️</button>
-    </div>
-    <div class="settings-group" style="text-align: left;">
-        <label>Edit Username</label>
-        <input type="text" id="editProfileName" class="settings-control-input" value="Guest">
-    </div>
-    <button id="saveProfileBtn" class="settings-control-input" style="background: var(--primary); font-weight:600; margin-bottom:10px;">💾 Save Profile</button>
-    <button id="panelLogoutBtn" class="settings-control-input" style="background: transparent; border: 1px solid var(--danger); color: var(--danger);">🚪 Logout Account</button>
-</div>
+<!-- JavaScript -->
 
 <script src="script.js"></script>
 
