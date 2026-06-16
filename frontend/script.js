@@ -1,5 +1,5 @@
 /* ==========================================================================
-   TBP AI v3.1 Professional - Core Intelligence Engine (Part 1 - Static Site Fix)
+   TBP AI v3.1 Professional - Core Intelligence Engine (Part 1 - Safe Storage)
    ========================================================================== */
 
 (function () {
@@ -10,7 +10,8 @@
         WALLPAPER: "tbp_active_wallpaper",
         PROFILE_AVATAR: "tbp_user_avatar",
         THEME: "tbp_theme_mode",
-        CHAT_HISTORY: "tbp_conversations"
+        CHAT_HISTORY: "tbp_conversations",
+        USER_API_KEY: "tbp_openai_api_key" // ব্রাউজারে কি সেভ রাখার চাবি
     };
 
     let appState = {
@@ -24,15 +25,11 @@
         abortController: null
     };
 
-    // --- স্ট্যাটিক সাইটের জন্য এপিআই কনফিগারেশন ---
-    // নোট: সিকিউরিটির জন্য প্রোডাকশনে প্রক্সি ব্যবহার করা ভালো, তবে স্ট্যাটিক সাইট থেকে সরাসরি টেস্ট করতে নিচের এপিআই কাজ করবে।
     const API_CONFIG = {
         ENDPOINT: "https://api.openai.com/v1/chat/completions", 
         TIMEOUT_MS: 30000,
         MAX_RETRIES: 2,
-        MODEL: "gpt-4o-mini",
-        // আপনার OpenAI API Key-টি নিচের কোটেশনের ভেতর বসিয়ে দিন (যেমন: "sk-proj-...")
-        API_KEY: "‎"YOUR_OPENAI_API_KEY" 
+        MODEL: "gpt-4o-mini"
     };
 
     const DOM = {
@@ -95,6 +92,7 @@
         }
         loadSystemState();
         applyVisualThemes();
+        injectAPIKeyInputInSettings(); // সেটিংস বক্সে ইনপুট ফিল্ড তৈরি করবে
         renderChatHistoryList();
         registerEventHandlers();
         checkAuthentication();
@@ -131,6 +129,32 @@
         } catch (e) {
             appState.conversations = {};
         }
+    }
+
+    // সেটিংস প্যানেলে অটোমেটিক একটি সুন্দর API Key ইনপুট বক্স যুক্ত করার লজিক
+    function injectAPIKeyInputInSettings() {
+        const savedKey = localStorage.getItem(STORAGE_KEYS.USER_API_KEY) || "";
+        const keyGroup = document.createElement("div");
+        keyGroup.style.margin = "15px 0";
+        keyGroup.style.textAlign = "left";
+        keyGroup.innerHTML = `
+            <label style="display:block; font-size:12px; margin-bottom:5px; color:var(--text);">OpenAI API Key সেট করুন:</label>
+            <input type="password" id="userApiKeyInput" value="${savedKey}" placeholder="sk-proj-..." style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border); background:rgba(0,0,0,0.2); color:var(--text); font-size:12px;">
+            <button id="saveKeyBtn" style="margin-top:8px; width:100%; padding:6px; background:var(--primary); color:white; border:none; border-radius:5px; cursor:pointer; font-size:12px;">🔑 চাবি সেভ করুন</button>
+        `;
+        const container = DOM.settingsPanel.querySelector(".panel-content") || DOM.settingsPanel;
+        container.insertBefore(keyGroup, DOM.clearChatBtn);
+
+        document.getElementById("saveKeyBtn").addEventListener("click", () => {
+            const keyVal = document.getElementById("userApiKeyInput").value.trim();
+            if(keyVal) {
+                localStorage.setItem(STORAGE_KEYS.USER_API_KEY, keyVal);
+                alert("API Key সফলভাবে সেভ হয়েছে!");
+            } else {
+                localStorage.removeItem(STORAGE_KEYS.USER_API_KEY);
+                alert("API Key মুছে ফেলা হয়েছে।");
+            }
+        });
     }
 
     function applyVisualThemes() {
@@ -192,7 +216,7 @@
                     <div class="message-content-wrap">
                         <div class="message-bubble">
                             👋 <b>স্বাগতম ${appState.currentUser}!</b><br><br>
-                            আমি আপনার পার্সোনাল এআই অ্যাসিস্ট্যান্ট। আজ আপনাকে কীভাবে সাহায্য করতে পারি? ফাইল শেয়ার করতে ক্লিপ আইকন বা ক্যামেরা ব্যবহার করুন।
+                            আমি আপনার পার্সোনাল এআই অ্যাসিস্ট্যান্ট। শুরু করার আগে নিচের গিয়ার (⚙️) আইকনে ক্লিক করে আপনার <b>OpenAI API Key</b> টি সেভ করে নিন।
                         </div>
                         <div class="message-meta"><span class="timestamp">System</span></div>
                     </div>
@@ -216,10 +240,152 @@
             pill.addEventListener("click", () => switchConversation(id));
             DOM.chatHistoryZone.appendChild(pill);
         });
-       }
-     async function dispatchAIReplySequence() {
+           }
+       /* ==========================================================================
+       TBP AI v3.1 Professional - Core Intelligence Engine (Part 2 - Safe Storage)
+       ========================================================================== */
+
+    function appendMessageToDOM(role, content, timestamp, index, files = []) {
+        const isUser = role === "user";
+        const row = document.createElement("div");
+        row.className = `message-row ${isUser ? 'user-row' : 'ai-row'}`;
+        row.dataset.index = index;
+
+        let renderedContent = escapeHTML(content);
+        if (!isUser && typeof marked !== 'undefined') {
+            renderedContent = marked.parse(content);
+            renderedContent = processCodeBlocksInHTML(renderedContent);
+        } else {
+            renderedContent = renderedContent.replace(/\n/g, '<br>');
+        }
+
+        let mediaPayloadMarkup = "";
+        if (files && files.length > 0) {
+            mediaPayloadMarkup = `<div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">`;
+            files.forEach(f => {
+                if (f.type.startsWith("image/")) {
+                    mediaPayloadMarkup += `<img src="${f.data}" style="max-width:180px; max-height:140px; border-radius:8px; border:1px solid var(--border);" alt="Preview">`;
+                } else {
+                    mediaPayloadMarkup += `<div style="padding:8px 12px; background:rgba(0,0,0,0.2); border-radius:8px; font-size:12px; color:var(--primary);">📄 Document (${f.name})</div>`;
+                }
+            });
+            mediaPayloadMarkup += `</div>`;
+        }
+
+        let avatarContent = isUser ? "" : "🤖";
+        let avatarStyle = "";
+        if (isUser) {
+            if (appState.userAvatar.startsWith("data:image")) {
+                avatarStyle = `background-image: url(${appState.userAvatar}); background-size:cover;`;
+            } else {
+                avatarContent = appState.userAvatar;
+            }
+        }
+
+        row.innerHTML = `
+            <div class="avatar" style="${avatarStyle}">${avatarContent}</div>
+            <div class="message-content-wrap">
+                <div class="message-bubble">
+                    ${mediaPayloadMarkup}
+                    <div class="bubble-markdown-core">${renderedContent}</div>
+                </div>
+                <div class="message-meta">
+                    <span class="timestamp">${timestamp}</span>
+                    <button class="msg-action-btn copy-msg-btn">📋 Copy</button>
+                    ${isUser ? '<button class="msg-action-btn edit-msg-btn">✏️ Edit</button>' : '<button class="msg-action-btn speak-msg-btn">🔊 Speak</button>'}
+                    <button class="msg-action-btn delete-msg-btn">🗑️ Delete</button>
+                    ${!isUser ? '<button class="msg-action-btn regen-msg-btn">🔄 Regenerate</button>' : ''}
+                </div>
+            </div>
+        `;
+
+        attachBubbleActionListeners(row, isUser, index);
+        DOM.chatBox.appendChild(row);
+        DOM.chatBox.scrollTop = DOM.chatBox.scrollHeight;
+    }
+
+    function processCodeBlocksInHTML(html) {
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = html;
+        const preElements = wrapper.querySelectorAll('pre');
+        preElements.forEach(pre => {
+            const codeNode = pre.querySelector('code');
+            const codeText = codeNode ? codeNode.innerText : pre.innerText;
+            const langMatch = codeNode ? codeNode.className.match(/language-(\w+)/) : null;
+            const language = langMatch ? langMatch[1] : "code";
+
+            const elementContainer = document.createElement('div');
+            elementContainer.className = "code-block-container";
+            elementContainer.innerHTML = `
+                <div class="code-block-header">
+                    <span>${language.toUpperCase()}</span>
+                    <button class="copy-code-btn">Copy Code</button>
+                </div>
+                <pre><code>${escapeHTML(codeText)}</code></pre>
+            `;
+            elementContainer.querySelector('.copy-code-btn').addEventListener('click', (e) => {
+                navigator.clipboard.writeText(codeText);
+                e.target.textContent = "Copied!";
+                setTimeout(() => e.target.textContent = "Copy Code", 2000);
+            });
+            pre.replaceWith(elementContainer);
+        });
+        return wrapper.innerHTML;
+    }
+
+    function attachBubbleActionListeners(row, isUser, index) {
+        row.querySelector(".copy-msg-btn").addEventListener("click", () => {
+            const txt = appState.conversations[appState.activeChatId].messages[index].content;
+            navigator.clipboard.writeText(txt);
+        });
+        row.querySelector(".delete-msg-btn").addEventListener("click", () => {
+            appState.conversations[appState.activeChatId].messages.splice(index, 1);
+            localStorage.setItem(STORAGE_KEYS.CHAT_HISTORY, JSON.stringify(appState.conversations));
+            loadActiveChatUI();
+        });
+        if (isUser) {
+            row.querySelector(".edit-msg-btn").addEventListener("click", () => {
+                const currentMsg = appState.conversations[appState.activeChatId].messages[index];
+                DOM.userInput.value = currentMsg.content;
+                DOM.userInput.focus();
+                appState.conversations[appState.activeChatId].messages.splice(index);
+                localStorage.setItem(STORAGE_KEYS.CHAT_HISTORY, JSON.stringify(appState.conversations));
+                loadActiveChatUI();
+            });
+        } else {
+            row.querySelector(".speak-msg-btn").addEventListener("click", () => {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    const txt = appState.conversations[appState.activeChatId].messages[index].content.replace(/[#*`]/g, '');
+                    const utterance = new SpeechSynthesisUtterance(txt);
+                    utterance.lang = 'bn-BD';
+                    window.speechSynthesis.speak(utterance);
+                }
+            });
+            row.querySelector(".regen-msg-btn").addEventListener("click", () => {
+                appState.conversations[appState.activeChatId].messages.splice(index);
+                localStorage.setItem(STORAGE_KEYS.CHAT_HISTORY, JSON.stringify(appState.conversations));
+                loadActiveChatUI();
+                dispatchAIReplySequence();
+            });
+        }
+    }
+
+    async function dispatchAIReplySequence() {
         const activeChat = appState.conversations[appState.activeChatId];
         if (!activeChat || activeChat.messages.length === 0) return;
+
+        // লোকাল স্টোরেজ থেকে ইউজারের সেভ করা চাবিটি রিড করবে
+        const userSavedKey = localStorage.getItem(STORAGE_KEYS.USER_API_KEY);
+        if (!userSavedKey) {
+            activeChat.messages.push({
+                role: "assistant",
+                content: "🛑 <b>API Key পাওয়া যায়নি!</b> অনুগ্রহ করে সেটিংস (⚙️) আইকনে ক্লিক করে আপনার OpenAI API Key-টি সেট করুন।",
+                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
+            loadActiveChatUI();
+            return;
+        }
 
         DOM.typingIndicator.style.display = "flex";
         DOM.sendBtn.style.display = "none";
@@ -238,12 +404,11 @@
 
         while (attempt <= API_CONFIG.MAX_RETRIES && !responseReceived) {
             try {
-                // সরাসরি ওপেনএআই এন্ডপয়েন্টে রিকোয়েস্ট পাঠানো হচ্ছে হেডারসহ
                 const res = await fetch(API_CONFIG.ENDPOINT, {
                     method: "POST",
                     headers: { 
                         "Content-Type": "application/json",
-                        "Authorization": `Bearer ${API_CONFIG.API_KEY}`
+                        "Authorization": `Bearer ${userSavedKey}` // ইউজারের নিজের চাবি পাঠানো হচ্ছে
                     },
                     body: JSON.stringify({ 
                         model: API_CONFIG.MODEL,
@@ -268,7 +433,7 @@
                 if (attempt > API_CONFIG.MAX_RETRIES) {
                     activeChat.messages.push({
                         role: "assistant",
-                        content: "⚠️ দুঃখিত, এপিআই সংযোগে সমস্যা হচ্ছে। আপনার API KEY চেক করুন অথবা পুনরায় চেষ্টা করুন।",
+                        content: "⚠️ দুঃখিত, সংযোগে সমস্যা হচ্ছে। আপনার API KEY সঠিক আছে কিনা পরীক্ষা করুন অথবা পুনরায় চেষ্টা করুন।",
                         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                     });
                 }
@@ -277,10 +442,188 @@
 
         DOM.typingIndicator.style.display = "none";
         DOM.sendBtn.style.display = "flex";
-        DOM.stopGenerationBtn.style.none = "none";
+        DOM.stopGenerationBtn.style.display = "none";
         appState.abortController = null;
 
         localStorage.setItem(STORAGE_KEYS.CHAT_HISTORY, JSON.stringify(appState.conversations));
         loadActiveChatUI();
-                   }
-   
+    }
+
+    function handleSelectedFiles(filesList) {
+        Array.from(filesList).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                appState.uploadedFiles.push({ name: file.name, type: file.type, data: e.target.result });
+                renderAttachmentPills();
+            };
+            if (file.type.startsWith("image/")) {
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    function renderAttachmentPills() {
+        DOM.attachmentPreviewBar.innerHTML = "";
+        if (appState.uploadedFiles.length === 0) {
+            DOM.attachmentPreviewBar.style.display = "none";
+            return;
+        }
+        DOM.attachmentPreviewBar.style.display = "flex";
+        appState.uploadedFiles.forEach((file, idx) => {
+            const pill = document.createElement("div");
+            pill.className = "preview-pill";
+            if (file.type.startsWith("image/")) {
+                pill.innerHTML = `<img src="${file.data}"><span class="preview-pill-remove" data-idx="${idx}">✕</span>`;
+            } else {
+                pill.innerHTML = `<div class="doc-icon">📄</div><span class="preview-pill-remove" data-idx="${idx}">✕</span>`;
+            }
+            pill.querySelector(".preview-pill-remove").addEventListener("click", (e) => {
+                appState.uploadedFiles.splice(parseInt(e.target.dataset.idx), 1);
+                renderAttachmentPills();
+            });
+            DOM.attachmentPreviewBar.appendChild(pill);
+        });
+    }
+
+    function setupDragAndDrop() {
+        const dropZone = document.querySelector(".main-container");
+        ['dragenter', 'dragover'].forEach(name => dropZone.addEventListener(name, (e) => { e.preventDefault(); dropZone.style.opacity = "0.8"; }, false));
+        ['dragleave', 'drop'].forEach(name => dropZone.addEventListener(name, (e) => { e.preventDefault(); dropZone.style.opacity = "1"; }, false));
+        dropZone.addEventListener('drop', (e) => { if (e.dataTransfer.files.length > 0) handleSelectedFiles(e.dataTransfer.files); });
+    }
+
+    function registerEventHandlers() {
+        DOM.loginBtn.addEventListener("click", () => {
+            const val = DOM.usernameInput.value.trim();
+            if (!val) return alert("একটি নাম প্রদান করুন।");
+            localStorage.setItem(STORAGE_KEYS.USER_SESSION, val);
+            checkAuthentication();
+        });
+
+        DOM.sendBtn.addEventListener("click", processIncomingUserPrompt);
+        DOM.userInput.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); processIncomingUserPrompt(); } });
+        DOM.userInput.addEventListener("input", autoResizeTextArea);
+        DOM.stopGenerationBtn.addEventListener("click", () => { if (appState.abortController) appState.abortController.abort(); });
+        DOM.mobileMenuBtn.addEventListener("click", () => DOM.sidebarPanel.classList.toggle("mobile-open"));
+        DOM.newChatBtn.addEventListener("click", createNewConversation);
+        DOM.sidebarNewChatBtn.addEventListener("click", createNewConversation);
+        DOM.searchChatInput.addEventListener("input", (e) => renderChatHistoryList(e.target.value));
+
+        setupPanelToggle(DOM.wallpaperBtn, DOM.wallpaperPanel, DOM.closeWallpaper);
+        setupPanelToggle(DOM.settingsBtn, DOM.settingsPanel, DOM.closeSettings);
+        setupPanelToggle(DOM.profileBtn, DOM.profilePanel, DOM.closeProfile);
+
+        DOM.themeBtn.addEventListener("click", toggleThemeMode);
+        DOM.themeSwitchBtn.addEventListener("click", toggleThemeMode);
+        DOM.clearChatBtn.addEventListener("click", () => {
+            if (confirm("সব মেসেজ মুছবেন?") && appState.conversations[appState.activeChatId]) {
+                appState.conversations[appState.activeChatId].messages = [];
+                localStorage.setItem(STORAGE_KEYS.CHAT_HISTORY, JSON.stringify(appState.conversations));
+                loadActiveChatUI();
+            }
+        });
+
+        DOM.exportChatBtn.addEventListener("click", () => {
+            const chat = appState.conversations[appState.activeChatId];
+            if (!chat || chat.messages.length === 0) return alert("কোনো মেসেজ নেই।");
+            let txt = `=== TBP AI Log ===\nTitle: ${chat.title}\n\n`;
+            chat.messages.forEach(m => txt += `[${m.timestamp}] ${m.role.toUpperCase()}: ${m.content}\n`);
+            const blob = new Blob([txt], { type: "text/plain;charset=utf-8" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = `chat_log.txt`;
+            a.click();
+        });
+
+        const logoutAction = () => { if (confirm("লগআউট করবেন?")) { localStorage.removeItem(STORAGE_KEYS.USER_SESSION); checkAuthentication(); } };
+        DOM.logoutBtn.addEventListener("click", logoutAction);
+        DOM.panelLogoutBtn.addEventListener("click", logoutAction);
+
+        DOM.attachBtn.addEventListener("click", () => DOM.hiddenFileInput.click());
+        DOM.cameraBtn.addEventListener("click", () => DOM.hiddenCameraInput.click());
+        DOM.hiddenFileInput.addEventListener("change", (e) => handleSelectedFiles(e.target.files));
+        DOM.hiddenCameraInput.addEventListener("change", (e) => handleSelectedFiles(e.target.files));
+
+        DOM.galleryThumbs.forEach(t => t.addEventListener("click", (e) => {
+            appState.activeWallpaper = e.target.dataset.wall;
+            localStorage.setItem(STORAGE_KEYS.WALLPAPER, appState.activeWallpaper);
+            applyVisualThemes();
+        }));
+
+        DOM.customWallpaperInput.addEventListener("change", (e) => {
+            if (e.target.files.length > 0) {
+                const r = new FileReader();
+                r.onload = (evt) => { appState.activeWallpaper = evt.target.result; localStorage.setItem(STORAGE_KEYS.WALLPAPER, appState.activeWallpaper); applyVisualThemes(); };
+                r.readAsDataURL(e.target.files[0]);
+            }
+        });
+
+        DOM.changeAvatarBtn.addEventListener("click", () => DOM.profileAvatarInput.click());
+        DOM.profileAvatarInput.addEventListener("change", (e) => {
+            if (e.target.files.length > 0) {
+                const r = new FileReader();
+                r.onload = (evt) => { appState.userAvatar = evt.target.result; syncAvatarUI(); };
+                r.readAsDataURL(e.target.files[0]);
+            }
+        });
+
+        DOM.saveProfileBtn.addEventListener("click", () => {
+            const n = DOM.editProfileName.value.trim();
+            if (n) {
+                appState.currentUser = n;
+                localStorage.setItem(STORAGE_KEYS.USER_SESSION, n);
+                localStorage.setItem(STORAGE_KEYS.PROFILE_AVATAR, appState.userAvatar);
+                alert("প্রোফাইল আপডেটেড!");
+                DOM.profilePanel.style.display = "none";
+                loadActiveChatUI();
+            }
+        });
+
+        if (voiceRecognitionInstance) {
+            DOM.voiceBtn.addEventListener("click", () => { DOM.voiceBtn.classList.add("active-state"); voiceRecognitionInstance.start(); });
+            voiceRecognitionInstance.onresult = (e) => { DOM.userInput.value += e.results[0][0].transcript; autoResizeTextArea(); };
+            voiceRecognitionInstance.onend = () => DOM.voiceBtn.classList.remove("active-state");
+        }
+    }
+
+    function setupPanelToggle(trigger, panel, closeBtn) {
+        trigger.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const show = panel.style.display === "block";
+            DOM.wallpaperPanel.style.display = "none"; DOM.settingsPanel.style.display = "none"; DOM.profilePanel.style.display = "none";
+            panel.style.display = show ? "none" : "block";
+        });
+        closeBtn.addEventListener("click", () => panel.style.display = "none");
+        document.addEventListener("click", (e) => { if (!panel.contains(e.target) && e.target !== trigger) panel.style.display = "none"; });
+    }
+
+    function processIncomingUserPrompt() {
+        const text = DOM.userInput.value.trim();
+        if (!text && appState.uploadedFiles.length === 0) return;
+        const activeChat = appState.conversations[appState.activeChatId];
+        if (!activeChat) return;
+
+        const newMsg = {
+            role: "user",
+            content: text || "Uploaded Payload",
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            files: [...appState.uploadedFiles]
+        };
+        activeChat.messages.push(newMsg);
+        appendMessageToDOM("user", newMsg.content, newMsg.timestamp, activeChat.messages.length - 1, newMsg.files);
+
+        DOM.userInput.value = ""; appState.uploadedFiles = []; renderAttachmentPills(); autoResizeTextArea();
+        localStorage.setItem(STORAGE_KEYS.CHAT_HISTORY, JSON.stringify(appState.conversations));
+        dispatchAIReplySequence();
+    }
+
+    function toggleThemeMode() { appState.isDarkMode = !appState.isDarkMode; localStorage.setItem(STORAGE_KEYS.THEME, appState.isDarkMode); applyVisualThemes(); }
+    function autoResizeTextArea() { DOM.userInput.style.height = "auto"; DOM.userInput.style.height = DOM.userInput.scrollHeight + "px"; }
+    function escapeHTML(str) { return str.replace(/[&<>'"]/g, t => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[t] || t)); }
+
+    window.addEventListener("resize", () => { DOM.mobileMenuBtn.style.display = window.innerWidth > 768 ? "none" : "block"; if (window.innerWidth > 768) DOM.sidebarPanel.classList.remove("mobile-open"); });
+    if (window.innerWidth <= 768) DOM.mobileMenuBtn.style.display = "block";
+
+    document.addEventListener("DOMContentLoaded", initApp);
+})();
+               
