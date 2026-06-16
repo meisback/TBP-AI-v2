@@ -251,12 +251,8 @@
             pill.addEventListener("click", () => switchConversation(id));
             DOM.chatHistoryZone.appendChild(pill);
         });
-       }
-       /* ==========================================================================
-       TBP AI v3.1 Professional - Core Intelligence Engine (Part 2)
-       ========================================================================== */
-
-    function appendMessageToDOM(role, content, timestamp, index, files = []) {
+    }
+       function appendMessageToDOM(role, content, timestamp, index, files = []) {
         const isUser = role === "user";
         const row = document.createElement("div");
         row.className = `message-row ${isUser ? 'user-row' : 'ai-row'}`;
@@ -644,7 +640,8 @@
         DOM.userInput.value = ""; appState.uploadedFiles = []; renderAttachmentPills(); autoResizeTextArea();
         localStorage.setItem(STORAGE_KEYS.CHAT_HISTORY, JSON.stringify(appState.conversations));
         dispatchAIReplySequence();
-       function toggleThemeMode() { 
+    }
+    function toggleThemeMode() { 
         appState.isDarkMode = !appState.isDarkMode; 
         localStorage.setItem(STORAGE_KEYS.THEME, appState.isDarkMode); 
         applyVisualThemes(); 
@@ -660,7 +657,8 @@
     function escapeHTML(str) { 
         return str.replace(/[&<>'"]/g, t => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[t] || t)); 
     }
-           window.addEventListener("resize", () => { 
+
+    window.addEventListener("resize", () => { 
         if(DOM.mobileMenuBtn) DOM.mobileMenuBtn.style.display = window.innerWidth > 768 ? "none" : "block"; 
         if (window.innerWidth > 768 && DOM.sidebarPanel) DOM.sidebarPanel.classList.remove("mobile-open"); 
     });
