@@ -264,4 +264,160 @@ style="display:none;">
 <script src="script.js"></script>
 
 </body>
+    <!-- =====================================
+     HTML v3.1 Part 1
+     Login + Sidebar + Header
+===================================== -->
+
+<!-- Login Screen -->
+<div id="loginScreen" class="login-screen">
+
+    <div class="login-card">
+
+        <div class="login-logo">🤖</div>
+
+        <h1>TBP AI v3.1</h1>
+
+        <p>আপনার নাম লিখে Continue করুন</p>
+
+        <input
+            type="text"
+            id="username"
+            placeholder="আপনার নাম লিখুন..."
+            autocomplete="off"
+        >
+
+        <button id="loginBtn">
+            Continue
+        </button>
+
+    </div>
+
+</div>
+
+<!-- Main App -->
+<div class="app">
+
+    <!-- Sidebar -->
+    <aside id="sidebarPanel" class="sidebar">
+
+        <div class="sidebar-top">
+
+            <button id="sidebarNewChatBtn" class="sidebar-btn">
+                ➕ New Chat
+            </button>
+
+            <input
+                type="text"
+                id="searchChatInput"
+                placeholder="Search chat..."
+            >
+
+        </div>
+
+        <div
+            id="chatHistoryZone"
+            class="chat-history"
+        >
+
+        </div>
+
+        <div class="sidebar-bottom">
+
+            <button
+                id="exportChatBtn"
+                class="sidebar-btn"
+            >
+                📤 Export Chat
+            </button>
+
+        </div>
+
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-container">
+
+        <!-- Header -->
+        <header>
+
+            <div class="header-left">
+
+                <button
+                    id="mobileMenuBtn"
+                    class="top-btn"
+                >
+                    ☰
+                </button>
+
+                <div class="ai-logo">
+                    🤖
+                </div>
+
+                <div class="header-title">
+
+                    <h2>TBP AI v3.1</h2>
+
+                    <span>
+                        Professional AI Assistant
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="header-right">
+
+                <button
+                    id="newChatBtn"
+                    class="top-btn"
+                    title="New Chat"
+                >
+                    ➕
+
+                </button>
+
+                <button
+                    id="themeBtn"
+                    class="top-btn"
+                    title="Theme"
+                >
+                    🌙
+                </button>
+
+                <button
+                    id="wallpaperBtn"
+                    class="top-btn"
+                    title="Wallpaper"
+                >
+                    🖼️
+                </button>
+
+                <button
+                    id="settingsBtn"
+                    class="top-btn"
+                    title="Settings"
+                >
+                    ⚙️
+                </button>
+
+                <button
+                    id="profileBtn"
+                    class="top-btn"
+                    title="Profile"
+                >
+                    👤
+                </button>
+
+                <button
+                    id="logoutBtn"
+                    class="top-btn"
+                    title="Logout"
+                >
+                    🚪
+                </button>
+
+            </div>
+
+        </header>
 </html>
