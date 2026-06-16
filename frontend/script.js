@@ -1,546 +1,346 @@
-// =====================================
-// TBP AI v3.0 Pro
-// Part 1 - Setup + Login + Theme
-// =====================================
+/* ==========================================
+   TBP AI v3.1 Stable
+   Part 1 - Global Style + Variables
+========================================== */
 
-// ===== Backend API =====
-const API_URL = "https://tbp-ai-v2.onrender.com/chat";
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
 
-// ===== Elements =====
-const loginScreen = document.getElementById("loginScreen");
-const loginBtn = document.getElementById("loginBtn");
-const usernameInput = document.getElementById("username");
+:root{
 
-const chatBox = document.getElementById("chatBox");
-const userInput = document.getElementById("userInput");
-const sendBtn = document.getElementById("sendBtn");
+    --bg:#0b1220;
+    --surface:#111827;
+    --card:rgba(17,24,39,.88);
 
-const themeBtn = document.getElementById("themeBtn");
-const newChatBtn = document.getElementById("newChatBtn");
+    --primary:#10a37f;
+    --secondary:#2563eb;
 
-const typing = document.getElementById("typing");
+    --text:#ffffff;
+    --muted:#9ca3af;
 
-// ===== Memory =====
-let messages = [];
+    --border:rgba(255,255,255,.08);
 
-// =====================================
-// Login System
-// =====================================
+    --shadow:0 10px 30px rgba(0,0,0,.35);
 
-const savedUser = localStorage.getItem("tbp_username");
-
-if(savedUser){
-
-loginScreen.style.display="none";
+    --radius:22px;
 
 }
 
-loginBtn.addEventListener("click",()=>{
+html{
 
-const name = usernameInput.value.trim();
-
-if(!name){
-
-    alert("আপনার নাম লিখুন");
-
-    return;
+    scroll-behavior:smooth;
 
 }
 
-localStorage.setItem("tbp_username",name);
+body{
 
-loginScreen.style.display="none";
+    font-family:"Poppins",sans-serif;
 
-});
+    color:var(--text);
 
-// =====================================
-// Theme
-// =====================================
+    background:
+    linear-gradient(rgba(5,10,20,.82),rgba(5,10,20,.82)),
+    url("wallpapers/wall1.jpg");
 
-const savedTheme = localStorage.getItem("tbp_theme");
+    background-size:cover;
+    background-position:center;
+    background-attachment:fixed;
 
-if(savedTheme==="light"){
+    width:100%;
+    height:100vh;
 
-document.body.classList.add("light");
-
-}
-
-themeBtn.addEventListener("click",()=>{
-
-document.body.classList.toggle("light");
-
-localStorage.setItem(
-
-    "tbp_theme",
-
-    document.body.classList.contains("light")
-
-    ? "light"
-
-    : "dark"
-
-);
-
-});
-
-// =====================================
-// Helper Functions
-// =====================================
-
-function showTyping(){
-
-typing.style.display="block";
+    overflow:hidden;
 
 }
 
-function hideTyping(){
+/* App */
 
-typing.style.display="none";
+.app{
+
+    width:100%;
+    height:100vh;
+
+    display:flex;
+    flex-direction:column;
+
+}
+
+/* Scrollbar */
+
+::-webkit-scrollbar{
+
+    width:6px;
 
 }
 
-function scrollBottom(){
+::-webkit-scrollbar-thumb{
 
-chatBox.scrollTop=chatBox.scrollHeight;
+    background:var(--primary);
+
+    border-radius:30px;
+
+}
+
+/* Button */
+
+button{
+
+    font-family:inherit;
+
+    cursor:pointer;
+
+    transition:.25s;
 
 }
 
-function saveChat(){
+/* Input */
 
-localStorage.setItem(
+input,
+textarea{
 
-    "tbp_messages",
+    font-family:inherit;
 
-    JSON.stringify(messages)
+    outline:none;
 
-);
+    border:none;
 
 }
-// =====================================
-// TBP AI v3.0 Pro
-// Professional addMessage()
-// =====================================
 
-function addMessage(text, sender){
+/* Glass */
 
-    const message = document.createElement("div");
-    message.className = sender + " message";
+.glass{
 
-    const avatar = document.createElement("div");
-    avatar.className = "avatar";
+    background:var(--card);
 
-    avatar.innerHTML =
-        sender === "user"
-        ? "👤"
-        : "🤖";
+    backdrop-filter:blur(18px);
 
-    const bubble = document.createElement("div");
-    bubble.className = "bubble";
-
-    bubble.innerHTML = formatMessage(text);
-    const info = document.createElement("div");
-    info.className = "message-info";
-
-    const time = new Date().toLocaleTimeString([],{
-        hour:"2-digit",
-        minute:"2-digit"
-    });
-
-    const copyBtn = document.createElement("button");
-    copyBtn.className = "copy-btn";
-    copyBtn.innerHTML = "📋";
-
-    copyBtn.onclick = async ()=>{
-
-        try{
-
-            await navigator.clipboard.writeText(text);
-
-            copyBtn.innerHTML="✅";
-
-            setTimeout(()=>{
-
-                copyBtn.innerHTML="📋";
-
-            },1500);
-
-        }catch{
-
-            alert("Copy Failed");
+    border:1px solid var(--border);
 
         }
+/* ==========================================
+   Part 2 - Login Screen + Premium Header
+========================================== */
 
-    };
+/* ---------- Login Screen ---------- */
 
-    info.innerHTML =
-        "<span>"+time+"</span>";
+.login-screen{
 
-    info.appendChild(copyBtn);
+    position:fixed;
+    inset:0;
 
-    bubble.appendChild(info);
+    display:flex;
+    align-items:center;
+    justify-content:center;
 
-    if(sender==="user"){
+    background:rgba(5,10,20,.92);
 
-        message.appendChild(bubble);
+    backdrop-filter:blur(15px);
 
-        message.appendChild(avatar);
-
-    }else{
-
-        message.appendChild(avatar);
-
-        message.appendChild(bubble);
-
-    }
-
-    chatBox.appendChild(message);
-
-    scrollBottom();
+    z-index:9999;
 
 }
 
-// Send Message
-async function sendMessage(){
+.login-card{
 
-const text = userInput.value.trim();
+    width:92%;
+    max-width:380px;
 
-if(!text) return;
+    padding:30px;
 
-addMessage(text,"user");
-// =====================================
-// Phase 3A - Markdown Support
-// =====================================
+    border-radius:26px;
 
-function formatMessage(text){
+    background:rgba(17,24,39,.90);
 
-    return text
-        .replace(/\*\*(.*?)\*\*/g,"<b>$1</b>")
-        .replace(/\*(.*?)\*/g,"<i>$1</i>")
-        .replace(/\n/g,"<br>");
+    border:1px solid rgba(255,255,255,.08);
 
-}
-messages.push({
-    role:"user",
-    content:text
-});
+    box-shadow:0 20px 50px rgba(0,0,0,.45);
 
-saveChat();
-
-userInput.value="";
-userInput.style.height="54px";
-
-showTyping();
-createThinkingBubble();
-try{
-
-    const response = await fetch(API_URL,{
-
-        method:"POST",
-
-        headers:{
-            "Content-Type":"application/json"
-        },
-
-        body:JSON.stringify({
-
-            message:text,
-
-            history:messages
-
-        })
-
-    });
-
-    const data = await response.json();
-
-    hideTyping();
-removeThinkingBubble();
-    const reply =
-        data.reply ||
-        "⚠️ কোনো উত্তর পাওয়া যায়নি।";
-
-    addMessage(reply,"bot");
-
-    messages.push({
-
-        role:"assistant",
-
-        content:reply
-
-    });
-
-    saveChat();
-
-}catch(error){
-
-    hideTyping();
-removeThinkingBubble();
-    addMessage(
-
-        "❌ সার্ভারের সাথে সংযোগ করা যাচ্ছে না।",
-
-        "bot"
-
-    );
-
-    console.error(error);
+    text-align:center;
 
 }
 
-}
+.login-logo{
 
-// Send Button
-sendBtn.addEventListener(
+    width:85px;
+    height:85px;
 
-"click",
+    margin:auto;
 
-sendMessage
+    border-radius:50%;
 
-);
+    display:flex;
+    align-items:center;
+    justify-content:center;
 
-// Enter Key
-userInput.addEventListener(
+    font-size:40px;
 
-"keydown",
+    background:linear-gradient(135deg,#10a37f,#2563eb);
 
-function(e){
-
-    if(e.key==="Enter" && !e.shiftKey){
-
-        e.preventDefault();
-
-        sendMessage();
-
-    }
+    box-shadow:0 0 25px rgba(16,163,127,.35);
 
 }
 
-);
-// =====================================
-// Part 3 - Wallpaper + Settings +
-// Profile + Chat History + Logout
-// =====================================
+.login-card h1{
 
-// ===== Panels =====
-const wallpaperPanel = document.getElementById("wallpaperPanel");
-const settingsPanel = document.getElementById("settingsPanel");
-const profilePanel = document.getElementById("profilePanel");
+    margin-top:18px;
 
-const wallpaperBtn = document.getElementById("wallpaperBtn");
-const settingsBtn = document.getElementById("settingsBtn");
-const profileBtn = document.getElementById("profileBtn");
-
-const closeWallpaper = document.getElementById("closeWallpaper");
-const closeSettings = document.getElementById("closeSettings");
-const closeProfile = document.getElementById("closeProfile");
-
-const openWallpaperBtn = document.getElementById("openWallpaperBtn");
-const clearChatBtn = document.getElementById("clearChatBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-
-// ===== Wallpaper =====
-if(wallpaperBtn){
-wallpaperBtn.onclick=()=>wallpaperPanel.style.display="flex";
-}
-
-if(openWallpaperBtn){
-openWallpaperBtn.onclick=()=>{
-settingsPanel.style.display="none";
-wallpaperPanel.style.display="flex";
-};
-}
-
-if(closeWallpaper){
-closeWallpaper.onclick=()=>wallpaperPanel.style.display="none";
-}
-
-document.querySelectorAll(".wallpaper").forEach(item=>{
-
-item.onclick=()=>{
-
-    const img=item.dataset.wall;
-
-    document.body.style.background=
-    `linear-gradient(rgba(5,10,20,.82),rgba(5,10,20,.82)),url(${img})`;
-
-    document.body.style.backgroundSize="cover";
-    document.body.style.backgroundPosition="center";
-    document.body.style.backgroundAttachment="fixed";
-
-    localStorage.setItem("tbp_wallpaper",img);
-
-    wallpaperPanel.style.display="none";
-
-};
-
-});
-
-const savedWallpaper=localStorage.getItem("tbp_wallpaper");
-
-if(savedWallpaper){
-
-document.body.style.background=
-`linear-gradient(rgba(5,10,20,.82),rgba(5,10,20,.82)),url(${savedWallpaper})`;
-
-document.body.style.backgroundSize="cover";
-document.body.style.backgroundPosition="center";
-document.body.style.backgroundAttachment="fixed";
+    font-size:28px;
 
 }
 
-// ===== Settings =====
-if(settingsBtn){
-settingsBtn.onclick=()=>settingsPanel.style.display="flex";
-}
+.login-card p{
 
-if(closeSettings){
-closeSettings.onclick=()=>settingsPanel.style.display="none";
-}
+    margin:10px 0 22px;
 
-// ===== Profile =====
-if(profileBtn){
-profileBtn.onclick=()=>{
-
-    const name=localStorage.getItem("tbp_username")||"Guest";
-
-    document.getElementById("profileName").textContent=name;
-
-    profilePanel.style.display="flex";
-
-};
+    color:var(--muted);
 
 }
 
-if(closeProfile){
-closeProfile.onclick=()=>profilePanel.style.display="none";
-}
+.login-card input{
 
-// ===== Chat History =====
-const savedMessages=localStorage.getItem("tbp_messages");
+    width:100%;
 
-if(savedMessages){
+    padding:15px 18px;
 
-messages=JSON.parse(savedMessages);
+    margin-bottom:16px;
 
-chatBox.innerHTML="";
+    border-radius:14px;
 
-messages.forEach(msg=>{
+    background:#0f172a;
 
-    addMessage(
+    color:#fff;
 
-        msg.content,
-
-        msg.role==="user" ? "user" : "bot"
-
-    );
-
-});
+    font-size:15px;
 
 }
 
-// ===== New Chat =====
-if(newChatBtn){
+.login-card button{
 
-newChatBtn.onclick=()=>{
+    width:100%;
 
-    if(confirm("নতুন Chat শুরু করবেন?")){
+    padding:15px;
 
-        messages=[];
+    border:none;
 
-        localStorage.removeItem("tbp_messages");
+    border-radius:14px;
 
-        chatBox.innerHTML="";
+    font-size:16px;
 
-    }
+    font-weight:600;
 
-};
+    color:#fff;
 
-}
-
-// ===== Clear Chat =====
-if(clearChatBtn){
-
-clearChatBtn.onclick=()=>{
-
-    messages=[];
-
-    localStorage.removeItem("tbp_messages");
-
-    chatBox.innerHTML="";
-
-    settingsPanel.style.display="none";
-
-};
+    background:linear-gradient(135deg,#10a37f,#2563eb);
 
 }
 
-// ===== Logout =====
-if(logoutBtn){
+.login-card button:hover{
 
-logoutBtn.onclick=()=>{
-
-    localStorage.removeItem("tbp_username");
-
-    location.reload();
-
-};
+    transform:translateY(-2px);
 
 }
 
-// ===== Auto Resize =====
-userInput.addEventListener("input",()=>{
+/* ---------- Premium Header ---------- */
 
-userInput.style.height="54px";
+.header{
 
-userInput.style.height=userInput.scrollHeight+"px";
+    position:sticky;
+    top:0;
+    z-index:100;
 
-});
-// =====================================
-// Phase 2A - AI Thinking Animation
-// =====================================
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 
-function createThinkingBubble(){
+    padding:15px 18px;
 
-    const thinking=document.createElement("div");
+    background:rgba(17,24,39,.88);
 
-    thinking.className="bot message";
+    backdrop-filter:blur(18px);
 
-    thinking.id="thinkingBubble";
-
-    thinking.innerHTML=`
-
-        <div class="avatar">🤖</div>
-
-        <div class="bubble">
-
-            <div class="thinking">
-
-                <span></span>
-
-                <span></span>
-
-                <span></span>
-
-            </div>
-
-        </div>
-
-    `;
-
-    chatBox.appendChild(thinking);
-
-    scrollBottom();
+    border-bottom:1px solid rgba(255,255,255,.08);
 
 }
 
-function removeThinkingBubble(){
+.header-left{
 
-    const bubble=document.getElementById("thinkingBubble");
-
-    if(bubble){
-
-        bubble.remove();
-
-    }
+    display:flex;
+    align-items:center;
+    gap:14px;
 
 }
+
+.ai-logo{
+
+    width:52px;
+    height:52px;
+
+    border-radius:50%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:24px;
+
+    background:linear-gradient(135deg,#10a37f,#2563eb);
+
+    box-shadow:0 0 20px rgba(16,163,127,.35);
+
+}
+
+.header-title h2{
+
+    font-size:20px;
+
+    font-weight:700;
+
+}
+
+.header-title span{
+
+    display:block;
+
+    margin-top:3px;
+
+    color:var(--muted);
+
+    font-size:12px;
+
+}
+
+.header-right{
+
+    display:flex;
+
+    gap:10px;
+
+}
+
+.top-btn{
+
+    width:42px;
+    height:42px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:#1f2937;
+
+    color:#fff;
+
+    font-size:18px;
+
+}
+
+.top-btn:hover{
+
+    background:#10a37f;
+
+    transform:scale(1.08);
+
+        }
